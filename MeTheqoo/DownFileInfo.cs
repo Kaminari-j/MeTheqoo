@@ -9,7 +9,9 @@ namespace MeTheqoo
 {
 	public class DownFileInfo
 	{
+		// Download Info
 		string OrigSrc { get; set; }
+		// File Info
 		string FileType { get; set; }
 		string FileName { get; set; }
 		string FileNameOrg { get; set; }
