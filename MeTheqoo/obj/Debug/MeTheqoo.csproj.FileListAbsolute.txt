@@ -1,0 +1,9 @@
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\bin\Debug\MeTheqoo.exe.config
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\bin\Debug\MeTheqoo.exe
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\bin\Debug\MeTheqoo.pdb
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.csprojResolveAssemblyReference.cache
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.Main.resources
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.Properties.Resources.resources
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.csproj.GenerateResource.Cache
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.exe
+c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.pdb
