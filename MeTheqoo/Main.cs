@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace MeTheqoo
 {
+	public enum SERVICE { twitter };
+
 	public partial class Main : Form
 	{
-		enum SERVICE { twitter };
-
 		public Main()
 		{
 			InitializeComponent();

@@ -17,6 +17,7 @@ namespace MeTheqoo
 {
 	public class DownloadFile
 	{
+		protected MeTheqoo.SERVICE SERVICE_NAME;
 		protected String ImgFindKwd { get; set; }
 		private String _Content { get; set; }
 		protected List<string> _FileList = new List<string>();
@@ -53,19 +54,23 @@ namespace MeTheqoo
 			{
 				string targetUrl = this.GetOriginalImageName(imgUrl);
 
-				WebClient webClient = new WebClient();
+				using (WebClient webClient = new WebClient())
+				{
+					//have to add filename phrase
+					string fileFullName = MakeUniqueFileName(System.Environment.CurrentDirectory
+															+ @"\" + DateTime.Now.ToString("yyyyMMdd") 
+															+ "_.jpg"
+															).FullName;
 
-				//have to add filename phrase
-				FileInfo tmpfi = MakeUnique(System.Environment.CurrentDirectory + @"\" + DateTime.Now.ToString("yyyyMMdd") + "_.jpg");
+					webClient.DownloadFile(targetUrl, fileFullName);
 
-				webClient.DownloadFile(targetUrl, tmpfi.FullName);
-
-				// read image from file, and delete tmp file?
+					// read image from file, and delete tmp file?
+				}
 			}
 			return true;
 		}
 
-		public FileInfo MakeUnique(string path)
+		public FileInfo MakeUniqueFileName(string path)
 		{
 			string dir = Path.GetDirectoryName(path);
 			string fileName = Path.GetFileNameWithoutExtension(path);
@@ -103,6 +108,7 @@ namespace MeTheqoo
 	{
 		public DownloadTwitter(String url) : base()
 		{
+			this.SERVICE_NAME = MeTheqoo.SERVICE.twitter;
 			this.ImgFindKwd = @"data-image-url=.*";
 
 			DoDownloadFile();
