@@ -5,12 +5,13 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MeTheqoo
 {
-	public enum SERVICE { twitter };
+	public enum SERVICE { NONE, twitter };
 
 	public partial class Main : Form
 	{
@@ -21,7 +22,23 @@ namespace MeTheqoo
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			DownloadTwitter dt = new DownloadTwitter(textBox1.Text);
+			string url = textBox1.Text;
+			switch (GetServiceName(url))
+			{
+				case SERVICE.twitter:
+					DownloadTwitter dt = new DownloadTwitter(url);
+					break;
+				default:
+					break;
+			}
+		}
+
+		private MeTheqoo.SERVICE GetServiceName(string url)
+		{
+			if (url.Contains("twitter.com"))
+				return MeTheqoo.SERVICE.twitter;
+
+			return MeTheqoo.SERVICE.NONE;
 		}
 	}
 }

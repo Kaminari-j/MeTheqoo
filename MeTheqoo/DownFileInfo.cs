@@ -26,12 +26,12 @@ namespace MeTheqoo
 
 		public DownFileInfo(string src)
 		{
-			this.OrigSrc = src;
+			this.URL = src;
 		}
 
 		public DownFileInfo(string src, string FileName, string FileNameOrg)
 		{
-			this.OrigSrc = src;
+			this.URL = src;
 			this.FileName = FileName;
 			this.FileNameOrg = FileNameOrg;
 		}
