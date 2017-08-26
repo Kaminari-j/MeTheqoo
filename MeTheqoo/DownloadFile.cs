@@ -22,27 +22,40 @@ namespace MeTheqoo
 		private String _Content { get; set; }
 		protected List<string> _FileList = new List<string>();
 
-		public DownloadFile() { }
+		public DownloadFile(string url) { }
 
-		protected void GetContentsFromSrc(string url)
+		protected bool GetContentsFromSrc(string url)
 		{
-			var webRequest = WebRequest.Create(url);
-
-			using (var response = webRequest.GetResponse())
-			using (var content = response.GetResponseStream())
-			using (var reader = new StreamReader(content))
+			try
 			{
-				var strContent = reader.ReadToEnd();
-				this._Content = strContent.ToString();
-			}
+				var webRequest = WebRequest.Create(url);
 
-			if (!String.IsNullOrEmpty(this._Content))
-			{
-				MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(this._Content, this.ImgFindKwd);
-				foreach (Match file in tmp)
+				using (var response = webRequest.GetResponse())
+				using (var content = response.GetResponseStream())
+				using (var reader = new StreamReader(content))
 				{
-					this._FileList.Add(file.ToString());
+					var strContent = reader.ReadToEnd();
+					this._Content = strContent.ToString();
 				}
+
+				if (!String.IsNullOrEmpty(this._Content))
+				{
+					MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(this._Content, this.ImgFindKwd);
+					foreach (Match file in tmp)
+					{
+						this._FileList.Add(file.ToString());
+					}
+
+					if (this._FileList.Count == 0)
+						return false;
+				}
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message + ex.StackTrace);
+				return false;
 			}
 		}
 
@@ -58,7 +71,7 @@ namespace MeTheqoo
 				{
 					//have to add filename phrase
 					string fileFullName = MakeUniqueFileName(System.Environment.CurrentDirectory
-															+ @"\" + DateTime.Now.ToString("yyyyMMdd") 
+															+ @"\" + DateTime.Now.ToString("yyyyMMdd")
 															+ "_.jpg"
 															).FullName;
 
@@ -106,12 +119,15 @@ namespace MeTheqoo
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url) : base()
+		public DownloadTwitter(String url) : base(url)
 		{
 			this.SERVICE_NAME = MeTheqoo.SERVICE.twitter;
 			this.ImgFindKwd = @"data-image-url=.*";
 
-			DoDownloadFile();
+			if (this.GetContentsFromSrc(url) == true)
+			{
+				DoDownloadFile();
+			}
 		}
 
 		protected override string GetOriginalImageName(string imgUrl)
