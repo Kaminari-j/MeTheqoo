@@ -66,16 +66,14 @@ namespace MeTheqoo
 			foreach (string imgUrl in _FileList)
 			{
 				string targetUrl = this.GetOriginalImageName(imgUrl);
+				string fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
+														+ @"\" + DateTime.Now.ToString("yyyyMMdd")
+														+ "_.jpg"
+														).FullName;
 
 				using (WebClient webClient = new WebClient())
 				{
-					//have to add filename phrase
-					string fileFullName = MakeUniqueFileName(System.Environment.CurrentDirectory
-															+ @"\" + DateTime.Now.ToString("yyyyMMdd")
-															+ "_.jpg"
-															).FullName;
-
-					webClient.DownloadFile(targetUrl, fileFullName);
+					webClient.DownloadFile(targetUrl, fullName);
 
 					// read image from file, and delete tmp file?
 				}
