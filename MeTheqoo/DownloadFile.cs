@@ -17,21 +17,15 @@ namespace MeTheqoo
 {
 	public class DownloadFile
 	{
-		protected String _SRC { get; set; }
 		protected String ImgFindKwd { get; set; }
 		private String _Content { get; set; }
-		protected String _ImgUrl { get; set; }
-		public Image _IMG { get; set; }
-		protected List<string> _imgNames = new List<string>();
+		protected List<string> _FileList = new List<string>();
 
-		public DownloadFile(String url) : base()
-		{
-			this._SRC = url;
-		}
+		public DownloadFile() { }
 
-		protected void GetContentsFromSrc()
+		protected void GetContentsFromSrc(string url)
 		{
-			var webRequest = WebRequest.Create(_SRC);
+			var webRequest = WebRequest.Create(url);
 
 			using (var response = webRequest.GetResponse())
 			using (var content = response.GetResponseStream())
@@ -44,9 +38,9 @@ namespace MeTheqoo
 			if (!String.IsNullOrEmpty(this._Content))
 			{
 				MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(this._Content, this.ImgFindKwd);
-				foreach(Match img in tmp)
+				foreach (Match file in tmp)
 				{
-					this._imgNames.Add(img.ToString());
+					this._FileList.Add(file.ToString());
 				}
 			}
 		}
@@ -55,7 +49,7 @@ namespace MeTheqoo
 		{
 			// Download from web
 
-			foreach (string imgUrl in _imgNames)
+			foreach (string imgUrl in _FileList)
 			{
 				string targetUrl = this.GetOriginalImageName(imgUrl);
 
@@ -107,16 +101,11 @@ namespace MeTheqoo
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url) : base(url)
+		public DownloadTwitter(String url) : base()
 		{
 			this.ImgFindKwd = @"data-image-url=.*";
-			
-			if (!String.IsNullOrEmpty(this._SRC))
-			{
-				this.GetContentsFromSrc();
 
-				DoDownloadFile();
-			}
+			DoDownloadFile();
 		}
 
 		protected override string GetOriginalImageName(string imgUrl)

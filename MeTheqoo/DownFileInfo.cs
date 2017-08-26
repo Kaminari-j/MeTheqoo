@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace MeTheqoo
 {
+	public enum FILETYPE { jpg, png }
+
 	public class DownFileInfo
 	{
 		// Download Info
-		string OrigSrc { get; set; }
+		public string URL { get; set; }
+		public string DownloadSrc { get; set; }
 		// File Info
-		string FileType { get; set; }
+		public MeTheqoo.FILETYPE FileType { get; set; }
+		public List<string> _FileList = new List<string>();
+
 		string FileName { get; set; }
 		string FileNameOrg { get; set; }
 		Int64 FileSize { get; set; }
