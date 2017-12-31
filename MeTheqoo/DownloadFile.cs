@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace MeTheqoo
 {
@@ -34,8 +35,7 @@ namespace MeTheqoo
 				using (var content = response.GetResponseStream())
 				using (var reader = new StreamReader(content))
 				{
-					var strContent = reader.ReadToEnd();
-					this._Content = strContent.ToString();
+					string _Content = reader.ReadToEnd();
 				}
 
 				if (!String.IsNullOrEmpty(this._Content))
@@ -115,12 +115,48 @@ namespace MeTheqoo
 		}
 	}
 
+	public class DownloadInstagram : DownloadFile
+	{
+		public DownloadInstagram(string url) : base(url)
+		{
+			// <meta property="og:image" content="https://scontent-nrt1-1.cdninstagram.com/t51.2885-15/e35/24274815_158803808203624_1511602663106543616_n.jpg" />
+
+			this.SERVICE_NAME = MeTheqoo.SERVICE.instagram;
+			this.ImgFindKwd = @"image"" content=.*";
+
+			if (this.GetContentsFromSrc(url) == true)
+			{
+				DoDownloadFile();
+			}
+		}
+
+		protected override string GetOriginalImageName(string imgUrl)
+		{
+			try
+			{
+				string kwd = "https.*.jpg";
+				MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(imgUrl, kwd);
+
+				foreach (Match file in tmp)
+				{
+					return tmp[0].ToString();
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message + ex.StackTrace);
+			}
+
+			return string.Empty;
+		}
+	}
+
 	public class DownloadTwitter : DownloadFile
 	{
 		public DownloadTwitter(String url) : base(url)
 		{
 			this.SERVICE_NAME = MeTheqoo.SERVICE.twitter;
-			this.ImgFindKwd = @"data-image-url=.*";
+			this.ImgFindKwd = @"data -image-url=.*";
 
 			if (this.GetContentsFromSrc(url) == true)
 			{
