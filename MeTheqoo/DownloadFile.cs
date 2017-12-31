@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MeTheqoo
 {
@@ -35,7 +36,8 @@ namespace MeTheqoo
 				using (var content = response.GetResponseStream())
 				using (var reader = new StreamReader(content))
 				{
-					string _Content = reader.ReadToEnd();
+					//string _Content = reader.ReadToEnd();
+					JToken jt = JObject.Parse(reader.ReadToEnd());
 				}
 
 				if (!String.IsNullOrEmpty(this._Content))
