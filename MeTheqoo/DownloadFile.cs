@@ -17,12 +17,38 @@ namespace MeTheqoo
 {
 	public class DownloadFile
 	{
-		protected MeTheqoo.SERVICE SERVICE_NAME;
-		protected String ImgFindKwd { get; set; }
+		protected MeTheqoo.SERVICE SERVICE_NAME = SERVICE.NONE;
+		protected String _grepKeyword { get; set; }
 		private String _Content { get; set; }
-		protected List<string> _FileList = new List<string>();
+		private String _url { get; set; }
 
-		public DownloadFile(string url) { }
+		public DownloadFile(string url, SERVICE SVC)
+		{
+			this._url = url;
+			this.SERVICE_NAME = SVC;
+
+			switch (this.SERVICE_NAME)
+			{
+				case SERVICE.twitter:
+					this._grepKeyword = @"data-image-url=.*";
+					break;
+				case SERVICE.instagram:
+					this._grepKeyword = @"display_resources.*]";
+					break;
+				case SERVICE.NONE:
+				default:
+					break;
+			}
+
+			if (this.GetContentsFromSrc(url) == true)
+			{
+				List<string> fileList = GrepFilesFromContents(this._Content, this._grepKeyword);
+				if (fileList.Count >= 1)
+				{
+					DoDownloadFile(fileList);
+				}
+			}
+		}
 
 		protected bool GetContentsFromSrc(string url)
 		{
@@ -34,51 +60,67 @@ namespace MeTheqoo
 				using (var content = response.GetResponseStream())
 				using (var reader = new StreamReader(content))
 				{
-					var strContent = reader.ReadToEnd();
-					this._Content = strContent.ToString();
-				}
-
-				if (!String.IsNullOrEmpty(this._Content))
-				{
-					MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(this._Content, this.ImgFindKwd);
-					foreach (Match file in tmp)
-					{
-						this._FileList.Add(file.ToString());
-					}
-
-					if (this._FileList.Count == 0)
-						return false;
+					this._Content = reader.ReadToEnd();
 				}
 
 				return true;
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(ex.Message + ex.StackTrace);
+				ShowExceptionMsgBox(ex);
 				return false;
 			}
 		}
 
-		protected bool DoDownloadFile()
+		protected List<string> GrepFilesFromContents(string strWebContent, string strGrepKwd)
+		{
+			if (String.IsNullOrEmpty(this._Content))
+			{
+				return null;
+			}
+			else
+			{
+				MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(strWebContent, strGrepKwd);
+				List<string> tmpFileList = new List<string>();
+				foreach (Match file in tmp)
+				{
+					tmpFileList.Add(file.ToString());
+				}
+
+				if (tmpFileList.Count == 0)
+					return null;
+				else
+					return tmpFileList;
+			}
+		}
+
+		protected bool DoDownloadFile(List<string> lstFiles)
 		{
 			// Download from web
-
-			foreach (string imgUrl in _FileList)
+			try
 			{
-				string targetUrl = this.GetOriginalImageName(imgUrl);
-				string fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
-														+ @"\" + DateTime.Now.ToString("yyyyMMdd")
-														+ "_.jpg"
-														).FullName;
-
-				using (WebClient webClient = new WebClient())
+				foreach (string imgUrl in lstFiles)
 				{
-					webClient.DownloadFile(targetUrl, fullName);
+					string targetUrl = this.GetOriginalImageName(imgUrl);
+					string fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
+															+ @"\" + DateTime.Now.ToString("yyyyMMdd")
+															+ "_.jpg"
+															).FullName;
 
-					// read image from file, and delete tmp file?
+					using (WebClient webClient = new WebClient())
+					{
+						webClient.DownloadFile(targetUrl, fullName);
+
+						// read image from file, and delete tmp file?
+					}
 				}
+				return true;
 			}
-			return true;
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+				return false;
+			}
 		}
 
 		public FileInfo MakeUniqueFileName(string path)
@@ -113,65 +155,52 @@ namespace MeTheqoo
 
 			return string.Empty;
 		}
+
+		private void ShowExceptionMsgBox(Exception ex)
+		{
+			MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+		}
 	}
 
 	public class DownloadInstagram : DownloadFile
 	{
-		public DownloadInstagram(String url) : base(url)
-		{
-			this.SERVICE_NAME = MeTheqoo.SERVICE.instagram;
-			this.ImgFindKwd = @"display_resources.*]";
+		public DownloadInstagram(String url) : base(url, SERVICE.instagram) { }
 
-			if (this.GetContentsFromSrc(url) == true)
-			{
-				DoDownloadFile();
-			}
-		}
+		//protected override string GetOriginalImageName(string imgUrl)
+		//{
+		//	// 後ろに :orig をつける
+		//	// 引数 imgUrl の文字列の例 "data-image-url="https://pbs.twimg.com/media/DDp82xwUMAEDOpz.jpg""
 
-		protected override string GetOriginalImageName(string imgUrl)
-		{
-			// 後ろに :orig をつける
-			// 引数 imgUrl の文字列の例 "data-image-url="https://pbs.twimg.com/media/DDp82xwUMAEDOpz.jpg""
+		//	try
+		//	{
+		//		string[] spltRst = imgUrl.Split('\"');
+		//		if (spltRst.Length == 3)
+		//		{
+		//			string url = spltRst[1];
+		//			url = url + ":orig";
 
-			try
-			{
-				string[] spltRst = imgUrl.Split('\"');
-				if (spltRst.Length == 3)
-				{
-					string url = spltRst[1];
-					url = url + ":orig";
+		//			return url;
+		//		}
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		MessageBox.Show(ex.Message + ex.StackTrace);
+		//	}
 
-					return url;
-				}
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.Message + ex.StackTrace);
-			}
+		//	return string.Empty;
+		//}
 
-			return string.Empty;
-		}
+		//protected override string GetOriginalMovieName(string imgUrl)
+		//{
+		//	// orig をつけるかほかの方法
 
-		protected override string GetOriginalMovieName(string imgUrl)
-		{
-			// orig をつけるかほかの方法
-
-			return string.Empty;
-		}
+		//	return string.Empty;
+		//}
 	}
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url) : base(url)
-		{
-			this.SERVICE_NAME = MeTheqoo.SERVICE.twitter;
-			this.ImgFindKwd = @"data-image-url=.*";
-
-			if (this.GetContentsFromSrc(url) == true)
-			{
-				DoDownloadFile();
-			}
-		}
+		public DownloadTwitter(String url) : base(url, SERVICE.twitter) { }
 
 		protected override string GetOriginalImageName(string imgUrl)
 		{

@@ -18,6 +18,8 @@ namespace MeTheqoo
 		public Main()
 		{
 			InitializeComponent();
+
+			this.statusLabel_ServiceName.Text = "";
 		}
 
 		private void button1_Click(object sender, EventArgs e)
