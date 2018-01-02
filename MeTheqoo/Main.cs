@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace MeTheqoo
 {
-	public enum SERVICE { NONE, twitter };
+	public enum SERVICE { NONE, twitter, instagram };
 
 	public partial class Main : Form
 	{
@@ -28,6 +28,9 @@ namespace MeTheqoo
 				case SERVICE.twitter:
 					DownloadTwitter dt = new DownloadTwitter(url);
 					break;
+				case SERVICE.instagram:
+					DownloadInstagram di = new DownloadInstagram(url);
+					break;
 				default:
 					break;
 			}
@@ -37,6 +40,8 @@ namespace MeTheqoo
 		{
 			if (url.Contains("twitter.com"))
 				return MeTheqoo.SERVICE.twitter;
+			if (url.Contains("instagram.com"))
+				return MeTheqoo.SERVICE.instagram;
 
 			return MeTheqoo.SERVICE.NONE;
 		}
