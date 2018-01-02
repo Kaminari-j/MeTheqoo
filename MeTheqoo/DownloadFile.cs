@@ -12,6 +12,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WebApiContrib.Formatting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MeTheqoo
 {
@@ -25,6 +28,12 @@ namespace MeTheqoo
 		public DownloadFile(string url, SERVICE SVC)
 		{
 			this._url = url;
+			if (url.Contains("taken-by"))
+			{
+				string[] tmpUrl = url.Split('?');
+				this._url = tmpUrl[0] + "?__a=1";
+			}
+
 			this.SERVICE_NAME = SVC;
 
 			switch (this.SERVICE_NAME)
@@ -33,14 +42,15 @@ namespace MeTheqoo
 					this._grepKeyword = @"data-image-url=.*";
 					break;
 				case SERVICE.instagram:
-					this._grepKeyword = @"display_resources.*]";
+					//this._grepKeyword = @"display_resources.*]";
+					this._grepKeyword = null; // JSONで取得するため
 					break;
 				case SERVICE.NONE:
 				default:
 					break;
 			}
 
-			if (this.GetContentsFromSrc(url) == true)
+			if (this.GetContentsFromSrc(this._url) == true)
 			{
 				List<string> fileList = GrepFilesFromContents(this._Content, this._grepKeyword);
 				if (fileList.Count >= 1)
@@ -80,17 +90,37 @@ namespace MeTheqoo
 			}
 			else
 			{
-				MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(strWebContent, strGrepKwd);
-				List<string> tmpFileList = new List<string>();
-				foreach (Match file in tmp)
+				try
 				{
-					tmpFileList.Add(file.ToString());
-				}
+					List<string> tmpFileList = new List<string>();
 
-				if (tmpFileList.Count == 0)
+					if (this.SERVICE_NAME == SERVICE.twitter)
+					{
+						MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(strWebContent, strGrepKwd);
+						foreach (Match file in tmp)
+						{
+							tmpFileList.Add(file.ToString());
+						}
+					}
+					else if (this.SERVICE_NAME == SERVICE.instagram)
+					{
+						JObject o = JObject.Parse(strWebContent);
+						foreach (JObject file in o["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
+						{
+							tmpFileList.Add(file["node"]["display_url"].ToString());
+						}
+					}
+
+					if (tmpFileList.Count == 0)
+						return null;
+					else
+						return tmpFileList;
+				}
+				catch (Exception ex)
+				{
+					ShowExceptionMsgBox(ex);
 					return null;
-				else
-					return tmpFileList;
+				}
 			}
 		}
 
@@ -167,36 +197,17 @@ namespace MeTheqoo
 	{
 		public DownloadInstagram(String url) : base(url, SERVICE.instagram) { }
 
-		//protected override string GetOriginalImageName(string imgUrl)
-		//{
-		//	// 後ろに :orig をつける
-		//	// 引数 imgUrl の文字列の例 "data-image-url="https://pbs.twimg.com/media/DDp82xwUMAEDOpz.jpg""
+		protected override string GetOriginalImageName(string imgUrl)
+		{
+			return imgUrl;
+		}
 
-		//	try
-		//	{
-		//		string[] spltRst = imgUrl.Split('\"');
-		//		if (spltRst.Length == 3)
-		//		{
-		//			string url = spltRst[1];
-		//			url = url + ":orig";
+		protected override string GetOriginalMovieName(string imgUrl)
+		{
+			// orig をつけるかほかの方法
 
-		//			return url;
-		//		}
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		MessageBox.Show(ex.Message + ex.StackTrace);
-		//	}
-
-		//	return string.Empty;
-		//}
-
-		//protected override string GetOriginalMovieName(string imgUrl)
-		//{
-		//	// orig をつけるかほかの方法
-
-		//	return string.Empty;
-		//}
+			return imgUrl;
+		}
 	}
 
 	public class DownloadTwitter : DownloadFile
