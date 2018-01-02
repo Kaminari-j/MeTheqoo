@@ -12,6 +12,7 @@ using System.Windows.Forms;
 namespace MeTheqoo
 {
 	public enum SERVICE { NONE, twitter, instagram };
+	public enum MEDIATYPE { NONE, image, video };
 
 	public partial class Main : Form
 	{

@@ -12,7 +12,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WebApiContrib.Formatting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,6 +20,7 @@ namespace MeTheqoo
 	public class DownloadFile
 	{
 		protected MeTheqoo.SERVICE SERVICE_NAME = SERVICE.NONE;
+		protected MeTheqoo.MEDIATYPE MEDIA_TYPE = MEDIATYPE.NONE;
 		protected String _grepKeyword { get; set; }
 		private String _Content { get; set; }
 		private String _url { get; set; }
@@ -28,13 +28,28 @@ namespace MeTheqoo
 		public DownloadFile(string url, SERVICE SVC)
 		{
 			this._url = url;
-			if (url.Contains("taken-by"))
-			{
-				string[] tmpUrl = url.Split('?');
-				this._url = tmpUrl[0] + "?__a=1";
-			}
-
 			this.SERVICE_NAME = SVC;
+
+			if (this.SERVICE_NAME == SERVICE.instagram)
+			{
+				if (url.Contains("taken-by"))
+				{
+					this._url = url.Split('?')[0];
+					this._url += "?__a=1";
+				}
+				else
+				{
+					if (url[url.Length - 1] == '/')
+					{
+						this._url += "?__a=1";
+					}
+					else
+					{
+						this._url += "/?__a=1";
+					}
+				}
+
+			}
 
 			switch (this.SERVICE_NAME)
 			{
@@ -96,6 +111,7 @@ namespace MeTheqoo
 
 					if (this.SERVICE_NAME == SERVICE.twitter)
 					{
+						this.MEDIA_TYPE = MEDIATYPE.image; // Twitterの動画ダウンロードは今後追加するため
 						MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(strWebContent, strGrepKwd);
 						foreach (Match file in tmp)
 						{
@@ -105,9 +121,37 @@ namespace MeTheqoo
 					else if (this.SERVICE_NAME == SERVICE.instagram)
 					{
 						JObject o = JObject.Parse(strWebContent);
-						foreach (JObject file in o["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
+						//if (o["graphql"]["shortcode_media"]["__typename"].ToString() == "GraphImage")
+						//{
+
+						//}
+
+						string mediaType = o["graphql"]["shortcode_media"]["__typename"].ToString();
+
+						if (mediaType == "GraphVideo")
 						{
-							tmpFileList.Add(file["node"]["display_url"].ToString());
+							this.MEDIA_TYPE = MEDIATYPE.video;
+							tmpFileList.Add(o["graphql"]["shortcode_media"]["video_url"].ToString());
+						}
+						else if (mediaType == "GraphImage")
+						{
+							this.MEDIA_TYPE = MEDIATYPE.image;
+							tmpFileList.Add(o["graphql"]["shortcode_media"]["display_url"].ToString());
+						}
+						else if (mediaType == "GraphSidecar")
+						{
+							mediaType = o["graphql"]["shortcode_media"]["__typename"].ToString();
+							foreach (JObject file in o["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
+							{
+								if (file["node"]["__typename"].ToString() == "GraphVideo")
+								{
+									tmpFileList.Add(file["node"]["video_url"].ToString());
+								}
+								else
+								{
+									tmpFileList.Add(file["node"]["display_url"].ToString());
+								}
+							}
 						}
 					}
 
@@ -132,10 +176,12 @@ namespace MeTheqoo
 				foreach (string imgUrl in lstFiles)
 				{
 					string targetUrl = this.GetOriginalImageName(imgUrl);
-					string fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
-															+ @"\" + DateTime.Now.ToString("yyyyMMdd")
-															+ "_" + this.SERVICE_NAME
-															+ "_.jpg"
+
+					string fullName = "";
+					fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
+													+ @"\" + DateTime.Now.ToString("yyyyMMdd")
+													+ "_" + this.SERVICE_NAME
+													, imgUrl
 															).FullName;
 
 					using (WebClient webClient = new WebClient())
@@ -154,11 +200,11 @@ namespace MeTheqoo
 			}
 		}
 
-		public FileInfo MakeUniqueFileName(string path)
+		public FileInfo MakeUniqueFileName(string path, string imgUrl)
 		{
 			string dir = Path.GetDirectoryName(path);
 			string fileName = Path.GetFileNameWithoutExtension(path);
-			string fileExt = Path.GetExtension(path);
+			string fileExt = Path.GetExtension(imgUrl);
 
 			for (int i = 1; ; ++i)
 			{
