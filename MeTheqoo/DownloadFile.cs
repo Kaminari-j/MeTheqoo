@@ -104,6 +104,7 @@ namespace MeTheqoo
 					string targetUrl = this.GetOriginalImageName(imgUrl);
 					string fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
 															+ @"\" + DateTime.Now.ToString("yyyyMMdd")
+															+ "_" + this.SERVICE_NAME
 															+ "_.jpg"
 															).FullName;
 
