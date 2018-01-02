@@ -24,11 +24,14 @@ namespace MeTheqoo
 		protected String _grepKeyword { get; set; }
 		private String _Content { get; set; }
 		private String _url { get; set; }
+		public List<string> _DownloadList { get; }
+		ListBox lb;
 
-		public DownloadFile(string url, SERVICE SVC)
+		public DownloadFile(string url, SERVICE SVC, ListBox lstBox)
 		{
 			this._url = url;
 			this.SERVICE_NAME = SVC;
+			this.lb = lstBox;
 
 			if (this.SERVICE_NAME == SERVICE.instagram)
 			{
@@ -121,10 +124,6 @@ namespace MeTheqoo
 					else if (this.SERVICE_NAME == SERVICE.instagram)
 					{
 						JObject o = JObject.Parse(strWebContent);
-						//if (o["graphql"]["shortcode_media"]["__typename"].ToString() == "GraphImage")
-						//{
-
-						//}
 
 						string mediaType = o["graphql"]["shortcode_media"]["__typename"].ToString();
 
@@ -140,14 +139,14 @@ namespace MeTheqoo
 						}
 						else if (mediaType == "GraphSidecar")
 						{
-							mediaType = o["graphql"]["shortcode_media"]["__typename"].ToString();
 							foreach (JObject file in o["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
 							{
-								if (file["node"]["__typename"].ToString() == "GraphVideo")
+								mediaType = file["node"]["__typename"].ToString();
+								if (mediaType == "GraphVideo")
 								{
 									tmpFileList.Add(file["node"]["video_url"].ToString());
 								}
-								else
+								else if (mediaType == "GraphImage")
 								{
 									tmpFileList.Add(file["node"]["display_url"].ToString());
 								}
@@ -181,6 +180,7 @@ namespace MeTheqoo
 					fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
 													+ @"\" + DateTime.Now.ToString("yyyyMMdd")
 													+ "_" + this.SERVICE_NAME
+													+ "_"
 													, imgUrl
 															).FullName;
 
@@ -190,6 +190,9 @@ namespace MeTheqoo
 
 						// read image from file, and delete tmp file?
 					}
+
+					this.lb.Items.Add(fullName.ToString());
+					//this._DownloadList.Add(fullName);
 				}
 				return true;
 			}
@@ -241,7 +244,7 @@ namespace MeTheqoo
 
 	public class DownloadInstagram : DownloadFile
 	{
-		public DownloadInstagram(String url) : base(url, SERVICE.instagram) { }
+		public DownloadInstagram(String url, ListBox lb) : base(url, SERVICE.instagram, lb) { }
 
 		protected override string GetOriginalImageName(string imgUrl)
 		{
@@ -258,7 +261,7 @@ namespace MeTheqoo
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url) : base(url, SERVICE.twitter) { }
+		public DownloadTwitter(String url, ListBox lb) : base(url, SERVICE.twitter, lb) { }
 
 		protected override string GetOriginalImageName(string imgUrl)
 		{

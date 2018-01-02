@@ -25,18 +25,7 @@ namespace MeTheqoo
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			string url = textBox1.Text;
-			switch (GetServiceName(url))
-			{
-				case SERVICE.twitter:
-					DownloadTwitter dt = new DownloadTwitter(url);
-					break;
-				case SERVICE.instagram:
-					DownloadInstagram di = new DownloadInstagram(url);
-					break;
-				default:
-					break;
-			}
+			this.onButtonclick();
 		}
 
 		private MeTheqoo.SERVICE GetServiceName(string url)
@@ -47,6 +36,31 @@ namespace MeTheqoo
 				return MeTheqoo.SERVICE.instagram;
 
 			return MeTheqoo.SERVICE.NONE;
+		}
+
+		private void tbUrl_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+			{
+				this.onButtonclick();
+			}
+		}
+
+		private void onButtonclick()
+		{
+			string url = tbUrl.Text;
+			switch (GetServiceName(url))
+			{
+				case SERVICE.twitter:
+					DownloadTwitter dt = new DownloadTwitter(url, this.listBox_Download);
+					break;
+				case SERVICE.instagram:
+					DownloadInstagram di = new DownloadInstagram(url, this.listBox_Download);
+					break;
+				default:
+					break;
+			}
+
 		}
 	}
 }
