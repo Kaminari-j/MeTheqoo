@@ -29,10 +29,11 @@
         private void InitializeComponent()
         {
 			this.tbUrl = new System.Windows.Forms.TextBox();
-			this.button1 = new System.Windows.Forms.Button();
+			this.btnDownload = new System.Windows.Forms.Button();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.statusLabel_ServiceName = new System.Windows.Forms.ToolStripStatusLabel();
 			this.listBox_Download = new System.Windows.Forms.ListBox();
+			this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -44,20 +45,21 @@
 			this.tbUrl.TabIndex = 0;
 			this.tbUrl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbUrl_KeyDown);
 			// 
-			// button1
+			// btnDownload
 			// 
-			this.button1.Location = new System.Drawing.Point(587, 10);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(75, 23);
-			this.button1.TabIndex = 1;
-			this.button1.Text = "button1";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
+			this.btnDownload.Location = new System.Drawing.Point(587, 10);
+			this.btnDownload.Name = "btnDownload";
+			this.btnDownload.Size = new System.Drawing.Size(75, 23);
+			this.btnDownload.TabIndex = 1;
+			this.btnDownload.Text = "Download";
+			this.btnDownload.UseVisualStyleBackColor = true;
+			this.btnDownload.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statusLabel_ServiceName});
+            this.statusLabel_ServiceName,
+            this.toolStripProgressBar1});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 269);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(673, 23);
@@ -79,6 +81,11 @@
 			this.listBox_Download.Size = new System.Drawing.Size(648, 220);
 			this.listBox_Download.TabIndex = 3;
 			// 
+			// toolStripProgressBar1
+			// 
+			this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+			this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 17);
+			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -86,10 +93,10 @@
 			this.ClientSize = new System.Drawing.Size(673, 292);
 			this.Controls.Add(this.listBox_Download);
 			this.Controls.Add(this.statusStrip1);
-			this.Controls.Add(this.button1);
+			this.Controls.Add(this.btnDownload);
 			this.Controls.Add(this.tbUrl);
 			this.Name = "Main";
-			this.Text = "Form1";
+			this.Text = "sh_downloader";
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
 			this.ResumeLayout(false);
@@ -100,10 +107,11 @@
 		#endregion
 
 		private System.Windows.Forms.TextBox tbUrl;
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Button btnDownload;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel statusLabel_ServiceName;
 		public System.Windows.Forms.ListBox listBox_Download;
+		private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
 	}
 }
 

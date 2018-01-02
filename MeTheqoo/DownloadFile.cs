@@ -26,12 +26,14 @@ namespace MeTheqoo
 		private String _url { get; set; }
 		public List<string> _DownloadList { get; }
 		ListBox lb;
+		ToolStripProgressBar tsProgress;
 
-		public DownloadFile(string url, SERVICE SVC, ListBox lstBox)
+		public DownloadFile(string url, SERVICE SVC, ListBox lstBox, ToolStripProgressBar prgbar)
 		{
 			this._url = url;
 			this.SERVICE_NAME = SVC;
 			this.lb = lstBox;
+			this.tsProgress = prgbar;
 
 			if (this.SERVICE_NAME == SERVICE.instagram)
 			{
@@ -123,23 +125,23 @@ namespace MeTheqoo
 					}
 					else if (this.SERVICE_NAME == SERVICE.instagram)
 					{
-						JObject o = JObject.Parse(strWebContent);
+						JObject jobj = JObject.Parse(strWebContent);
 
-						string mediaType = o["graphql"]["shortcode_media"]["__typename"].ToString();
+						string mediaType = jobj["graphql"]["shortcode_media"]["__typename"].ToString();
 
 						if (mediaType == "GraphVideo")
 						{
 							this.MEDIA_TYPE = MEDIATYPE.video;
-							tmpFileList.Add(o["graphql"]["shortcode_media"]["video_url"].ToString());
+							tmpFileList.Add(jobj["graphql"]["shortcode_media"]["video_url"].ToString());
 						}
 						else if (mediaType == "GraphImage")
 						{
 							this.MEDIA_TYPE = MEDIATYPE.image;
-							tmpFileList.Add(o["graphql"]["shortcode_media"]["display_url"].ToString());
+							tmpFileList.Add(jobj["graphql"]["shortcode_media"]["display_url"].ToString());
 						}
 						else if (mediaType == "GraphSidecar")
 						{
-							foreach (JObject file in o["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
+							foreach (JObject file in jobj["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
 							{
 								mediaType = file["node"]["__typename"].ToString();
 								if (mediaType == "GraphVideo")
@@ -172,6 +174,7 @@ namespace MeTheqoo
 			// Download from web
 			try
 			{
+				tsProgress.Maximum = lstFiles.Count;
 				foreach (string imgUrl in lstFiles)
 				{
 					string targetUrl = this.GetOriginalImageName(imgUrl);
@@ -191,6 +194,7 @@ namespace MeTheqoo
 						// read image from file, and delete tmp file?
 					}
 
+					this.tsProgress.PerformStep();
 					this.lb.Items.Add(fullName.ToString());
 					//this._DownloadList.Add(fullName);
 				}
@@ -244,7 +248,7 @@ namespace MeTheqoo
 
 	public class DownloadInstagram : DownloadFile
 	{
-		public DownloadInstagram(String url, ListBox lb) : base(url, SERVICE.instagram, lb) { }
+		public DownloadInstagram(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.instagram, listbox, tbar) { }
 
 		protected override string GetOriginalImageName(string imgUrl)
 		{
@@ -261,7 +265,7 @@ namespace MeTheqoo
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url, ListBox lb) : base(url, SERVICE.twitter, lb) { }
+		public DownloadTwitter(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.twitter, listbox, tbar) { }
 
 		protected override string GetOriginalImageName(string imgUrl)
 		{

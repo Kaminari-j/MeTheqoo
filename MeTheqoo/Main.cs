@@ -52,10 +52,10 @@ namespace MeTheqoo
 			switch (GetServiceName(url))
 			{
 				case SERVICE.twitter:
-					DownloadTwitter dt = new DownloadTwitter(url, this.listBox_Download);
+					DownloadTwitter dt = new DownloadTwitter(url, this.listBox_Download, this.toolStripProgressBar1);
 					break;
 				case SERVICE.instagram:
-					DownloadInstagram di = new DownloadInstagram(url, this.listBox_Download);
+					DownloadInstagram di = new DownloadInstagram(url, this.listBox_Download, this.toolStripProgressBar1);
 					break;
 				default:
 					break;
