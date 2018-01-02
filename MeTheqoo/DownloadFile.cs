@@ -12,11 +12,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-<<<<<<< HEAD
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-=======
->>>>>>> parent of 166bcbb... json
 
 namespace MeTheqoo
 {
@@ -39,13 +34,8 @@ namespace MeTheqoo
 				using (var content = response.GetResponseStream())
 				using (var reader = new StreamReader(content))
 				{
-<<<<<<< HEAD
-					//string _Content = reader.ReadToEnd();
-					JToken jt = JObject.Parse(reader.ReadToEnd());
-=======
 					var strContent = reader.ReadToEnd();
 					this._Content = strContent.ToString();
->>>>>>> parent of 166bcbb... json
 				}
 
 				if (!String.IsNullOrEmpty(this._Content))
@@ -120,6 +110,51 @@ namespace MeTheqoo
 			// orig をつけるかほかの方法
 
 			try { } catch (Exception) { }
+
+			return string.Empty;
+		}
+	}
+
+	public class DownloadInstagram : DownloadFile
+	{
+		public DownloadInstagram(String url) : base(url)
+		{
+			this.SERVICE_NAME = MeTheqoo.SERVICE.instagram;
+			this.ImgFindKwd = @"display_resources.*]";
+
+			if (this.GetContentsFromSrc(url) == true)
+			{
+				DoDownloadFile();
+			}
+		}
+
+		protected override string GetOriginalImageName(string imgUrl)
+		{
+			// 後ろに :orig をつける
+			// 引数 imgUrl の文字列の例 "data-image-url="https://pbs.twimg.com/media/DDp82xwUMAEDOpz.jpg""
+
+			try
+			{
+				string[] spltRst = imgUrl.Split('\"');
+				if (spltRst.Length == 3)
+				{
+					string url = spltRst[1];
+					url = url + ":orig";
+
+					return url;
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message + ex.StackTrace);
+			}
+
+			return string.Empty;
+		}
+
+		protected override string GetOriginalMovieName(string imgUrl)
+		{
+			// orig をつけるかほかの方法
 
 			return string.Empty;
 		}
