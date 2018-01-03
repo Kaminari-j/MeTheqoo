@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Linq;
 using System.Net;
 using System.Security.AccessControl;
@@ -24,27 +25,38 @@ namespace KSHTool
 		protected String _grepKeyword { get; set; }
 		private String _Content { get; set; }
 		private String _url { get; set; }
-		public List<string> _DownloadList { get; }
+		public List<string> _DownloadList { get; set; }
+		protected IControlInterface frm;
+		private bool _finishFlag = false;
 
-		public DownloadFile(string url, SERVICE SVC)
+		public DownloadFile(string url, SERVICE SVC, IControlInterface MainFrm)
 		{
 			this._url = SetTargetUrl(url);
 			this.SERVICE_NAME = SVC;
+			this.frm = MainFrm;
+		}
 
+		public bool StartDownload()
+		{
 			try
 			{
+				bool dl_result = false;
+
 				if (this.GetContentsFromSrc(this._url) == true)
 				{
 					List<string> fileList = MakeFileList(this._Content);
 					if (fileList.Count >= 1)
 					{
-						DoDownloadFile(fileList);
+						dl_result = DoDownloadFile(fileList, true);
 					}
-				}
+				} 
+
+				return dl_result;
 			}
 			catch (Exception ex)
 			{
 				ShowExceptionMsgBox(ex);
+				return false;
 			}
 		}
 
@@ -106,7 +118,9 @@ namespace KSHTool
 			// Download from web
 			try
 			{
-				tsProgress.Maximum = lstFiles.Count;
+				// SetProgressbarMax
+				frm.DoSetProgressBarMaxValue(lstFiles.Count);
+
 				foreach (string imgUrl in lstFiles)
 				{
 					string targetUrl = this.GetOriginalImageName(imgUrl);
@@ -119,17 +133,22 @@ namespace KSHTool
 													, imgUrl
 															).FullName;
 
+					// Set File Names to listbox
+					this.frm.DoAddListBoxValue(fullName);
+
 					using (WebClient webClient = new WebClient())
 					{
+						// Download
 						webClient.DownloadFile(targetUrl, fullName);
 
 						// read image from file, and delete tmp file?
 					}
-
-					this.tsProgress.PerformStep();
-					this.lb.Items.Add(fullName.ToString());
-					//this._DownloadList.Add(fullName);
+					// Progressbar step
+					frm.DoPerformProgressBarStep();
 				}
+
+				// Reset Progress Bar
+				frm.DoResetProgressBar();
 				return true;
 			}
 			catch (Exception ex)
@@ -137,6 +156,61 @@ namespace KSHTool
 				ShowExceptionMsgBox(ex);
 				return false;
 			}
+		}
+
+		protected bool DoDownloadFile(List<string> lstFiles, bool isThread)
+		{
+			// Download from web
+			try
+			{
+				this._DownloadList = lstFiles;
+				// SetProgressbarMax
+				frm.DoSetProgressBarMaxValue(this._DownloadList.Count);
+				
+				//Thread th = new Thread(new ThreadStart(DownloadThread));
+				Thread th = new Thread(() => DownloadThread());
+				th.Start();
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+				return false;
+			}
+		}
+
+		public void DownloadThread()
+		{
+			foreach (string imgUrl in this._DownloadList)
+			{
+				string targetUrl = this.GetOriginalImageName(imgUrl);
+
+				string fullName = "";
+				fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
+												+ @"\" + DateTime.Now.ToString("yyyyMMdd")
+												+ "_" + this.SERVICE_NAME
+												+ "_"
+												, imgUrl
+														).FullName;
+
+				using (WebClient webClient = new WebClient())
+				{
+					// Download
+					webClient.DownloadFile(targetUrl, fullName);
+
+					// read image from file, and delete tmp file?
+				}
+
+				// Set File Names to listbox
+				this.frm.DoAddListBoxValue(fullName);
+				// Progressbar step
+				frm.DoPerformProgressBarStep();
+			}
+
+			// Reset Progress Bar
+			frm.DoResetProgressBar();
+			this._finishFlag = true;
 		}
 
 		public FileInfo MakeUniqueFileName(string path, string imgUrl)
@@ -177,7 +251,7 @@ namespace KSHTool
 	public class DownloadInstagram : DownloadFile
 	{
 		// https://www.instagram.com/p/BdcnRlSl4Yh
-		public DownloadInstagram(String url) : base(url, SERVICE.instagram)
+		public DownloadInstagram(String url, IControlInterface MainFrm) : base(url, SERVICE.instagram, MainFrm)
 		{
 		}
 
@@ -225,7 +299,7 @@ namespace KSHTool
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url) : base(url, SERVICE.twitter)
+		public DownloadTwitter(String url, IControlInterface MainFrm) : base(url, SERVICE.twitter, MainFrm)
 		{
 			this._grepKeyword = @"data-image-url=.*";
 		}

@@ -15,3 +15,4 @@ C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\KimSeohyeonTool.Pro
 C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\KimSeohyeonTool.csproj.GenerateResource.Cache
 C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\KimSeohyeonTool.exe
 C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\KimSeohyeonTool.pdb
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\KimSeohyeonTool.csprojResolveAssemblyReference.cache
