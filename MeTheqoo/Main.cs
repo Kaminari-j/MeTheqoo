@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -103,7 +104,9 @@ namespace KSHTool
 				this.toolStripProgressBar1.PerformStep();
 
 				if (this.toolStripProgressBar1.Value == this.toolStripProgressBar1.Maximum)
+				{
 					MessageBox.Show("다운로드 완료!");
+				}
 			}
 		}
 
@@ -146,6 +149,14 @@ namespace KSHTool
 		private void btnDownload_Click(object sender, EventArgs e)
 		{
 			this.onButtonclick();
+		}
+
+		private void listBox_Download_DoubleClick(object sender, EventArgs e)
+		{
+			if (((ListBox)sender).SelectedItem != null)
+			{
+				Process.Start(((ListBox)sender).SelectedItem.ToString());
+			}
 		}
 		#endregion
 	}

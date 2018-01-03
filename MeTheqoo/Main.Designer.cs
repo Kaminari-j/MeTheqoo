@@ -85,6 +85,7 @@
 			this.listBox_Download.Name = "listBox_Download";
 			this.listBox_Download.Size = new System.Drawing.Size(648, 220);
 			this.listBox_Download.TabIndex = 3;
+			this.listBox_Download.DoubleClick += new System.EventHandler(this.listBox_Download_DoubleClick);
 			// 
 			// Main
 			// 
@@ -95,6 +96,8 @@
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.btnDownload);
 			this.Controls.Add(this.tbUrl);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+			this.MaximizeBox = false;
 			this.Name = "Main";
 			this.Text = "sh_downloader";
 			this.statusStrip1.ResumeLayout(false);
