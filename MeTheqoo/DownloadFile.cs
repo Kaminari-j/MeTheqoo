@@ -25,15 +25,11 @@ namespace KSHTool
 		private String _Content { get; set; }
 		private String _url { get; set; }
 		public List<string> _DownloadList { get; }
-		ListBox lb;
-		ToolStripProgressBar tsProgress;
 
-		public DownloadFile(string url, SERVICE SVC, ListBox lstBox, ToolStripProgressBar prgbar)
+		public DownloadFile(string url, SERVICE SVC)
 		{
 			this._url = SetTargetUrl(url);
 			this.SERVICE_NAME = SVC;
-			this.lb = lstBox;
-			this.tsProgress = prgbar;
 
 			try
 			{
@@ -69,7 +65,6 @@ namespace KSHTool
 				{
 					this._Content = reader.ReadToEnd();
 				}
-
 
 				return true;
 			}
@@ -182,7 +177,7 @@ namespace KSHTool
 	public class DownloadInstagram : DownloadFile
 	{
 		// https://www.instagram.com/p/BdcnRlSl4Yh
-		public DownloadInstagram(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.instagram, listbox, tbar)
+		public DownloadInstagram(String url) : base(url, SERVICE.instagram)
 		{
 		}
 
@@ -230,7 +225,7 @@ namespace KSHTool
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.twitter, listbox, tbar)
+		public DownloadTwitter(String url) : base(url, SERVICE.twitter)
 		{
 			this._grepKeyword = @"data-image-url=.*";
 		}

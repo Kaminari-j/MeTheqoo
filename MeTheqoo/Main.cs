@@ -44,10 +44,10 @@ namespace KSHTool
 			switch (svc)
 			{
 				case SERVICE.twitter:
-					DownloadTwitter dt = new DownloadTwitter(url, this.listBox_Download, this.toolStripProgressBar1);
+					DownloadTwitter dt = new DownloadTwitter(url);
 					break;
 				case SERVICE.instagram:
-					DownloadInstagram di = new DownloadInstagram(url, this.listBox_Download, this.toolStripProgressBar1);
+					DownloadInstagram di = new DownloadInstagram(url);
 					break;
 				case SERVICE.NONE:
 				default:
