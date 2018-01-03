@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MeTheqoo
+namespace KSHTool
 {
 	class JSON_instagram
 	{

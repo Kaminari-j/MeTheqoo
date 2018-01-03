@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MeTheqoo
+namespace KSHTool
 {
 	public enum SERVICE { NONE, twitter, instagram };
 	public enum MEDIATYPE { NONE, image, video };
@@ -23,20 +23,41 @@ namespace MeTheqoo
 			this.statusLabel_ServiceName.Text = "";
 		}
 
-		private void button1_Click(object sender, EventArgs e)
-		{
-			this.onButtonclick();
-		}
+		#region -- Methods --
 
-		private MeTheqoo.SERVICE GetServiceName(string url)
+		private KSHTool.SERVICE GetServiceName(string url)
 		{
 			if (url.Contains("twitter.com"))
-				return MeTheqoo.SERVICE.twitter;
+				return KSHTool.SERVICE.twitter;
 			if (url.Contains("instagram.com"))
-				return MeTheqoo.SERVICE.instagram;
-
-			return MeTheqoo.SERVICE.NONE;
+				return KSHTool.SERVICE.instagram;
+			else
+				return KSHTool.SERVICE.NONE;
 		}
+
+		private void onButtonclick()
+		{
+			string url = tbUrl.Text;
+			SERVICE svc = GetServiceName(url);
+			this.statusLabel_ServiceName.Text = svc.ToString();
+			switch (svc)
+			{
+				case SERVICE.twitter:
+					DownloadTwitter dt = new DownloadTwitter(url, this.listBox_Download, this.toolStripProgressBar1);
+					break;
+				case SERVICE.instagram:
+					DownloadInstagram di = new DownloadInstagram(url, this.listBox_Download, this.toolStripProgressBar1);
+					break;
+				case SERVICE.NONE:
+				default:
+					MessageBox.Show("해당 서비스는 아직 지원되지 않습니다.");
+					break;
+			}
+		}
+
+		#endregion
+
+		#region -- HandleEvent --
 
 		private void tbUrl_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -46,21 +67,11 @@ namespace MeTheqoo
 			}
 		}
 
-		private void onButtonclick()
+		private void btnDownload_Click(object sender, EventArgs e)
 		{
-			string url = tbUrl.Text;
-			switch (GetServiceName(url))
-			{
-				case SERVICE.twitter:
-					DownloadTwitter dt = new DownloadTwitter(url, this.listBox_Download, this.toolStripProgressBar1);
-					break;
-				case SERVICE.instagram:
-					DownloadInstagram di = new DownloadInstagram(url, this.listBox_Download, this.toolStripProgressBar1);
-					break;
-				default:
-					break;
-			}
-
+			this.onButtonclick();
 		}
+
+		#endregion
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace MeTheqoo
+﻿namespace KSHTool
 {
     partial class Main
     {
@@ -53,7 +53,7 @@
 			this.btnDownload.TabIndex = 1;
 			this.btnDownload.Text = "Download";
 			this.btnDownload.UseVisualStyleBackColor = true;
-			this.btnDownload.Click += new System.EventHandler(this.button1_Click);
+			this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
 			// 
 			// statusStrip1
 			// 

@@ -15,12 +15,12 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MeTheqoo
+namespace KSHTool
 {
 	public class DownloadFile
 	{
-		protected MeTheqoo.SERVICE SERVICE_NAME = SERVICE.NONE;
-		protected MeTheqoo.MEDIATYPE MEDIA_TYPE = MEDIATYPE.NONE;
+		protected KSHTool.SERVICE SERVICE_NAME = SERVICE.NONE;
+		protected KSHTool.MEDIATYPE MEDIA_TYPE = MEDIATYPE.NONE;
 		protected String _grepKeyword { get; set; }
 		private String _Content { get; set; }
 		private String _url { get; set; }
@@ -102,7 +102,7 @@ namespace MeTheqoo
 			}
 		}
 
-		protected List<string> GrepFilesFromContents(string strWebContent, string strGrepKwd)
+		protected virtual List<string> GrepFilesFromContents(string strWebContent, string strGrepKwd)
 		{
 			if (String.IsNullOrEmpty(this._Content))
 			{
@@ -226,18 +226,14 @@ namespace MeTheqoo
 		{
 			// orig をつけるかほかの方法
 
-			try { } catch (Exception) { }
-
-			return string.Empty;
+			return imgUrl;
 		}
 
 		protected virtual string GetOriginalMovieName(string imgUrl)
 		{
 			// orig をつけるかほかの方法
 
-			try { } catch (Exception) { }
-
-			return string.Empty;
+			return imgUrl;
 		}
 
 		private void ShowExceptionMsgBox(Exception ex)
@@ -248,18 +244,12 @@ namespace MeTheqoo
 
 	public class DownloadInstagram : DownloadFile
 	{
+		// https://www.instagram.com/p/BdcnRlSl4Yh
 		public DownloadInstagram(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.instagram, listbox, tbar) { }
 
-		protected override string GetOriginalImageName(string imgUrl)
+		protected override List<string> GrepFilesFromContents(string strWebContent, string strGrepKwd)
 		{
-			return imgUrl;
-		}
-
-		protected override string GetOriginalMovieName(string imgUrl)
-		{
-			// orig をつけるかほかの方法
-
-			return imgUrl;
+			return base.GrepFilesFromContents(strWebContent, strGrepKwd);
 		}
 	}
 
@@ -286,6 +276,8 @@ namespace MeTheqoo
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message + ex.StackTrace);
+
+				return string.Empty;
 			}
 
 			return string.Empty;

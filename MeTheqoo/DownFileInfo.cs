@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MeTheqoo
+namespace KSHTool
 {
 	public enum FILETYPE { jpg, png }
 
@@ -15,7 +15,7 @@ namespace MeTheqoo
 		public string URL { get; set; }
 		public string DownloadSrc { get; set; }
 		// File Info
-		public MeTheqoo.FILETYPE FileType { get; set; }
+		public KSHTool.FILETYPE FileType { get; set; }
 		public List<string> _FileList = new List<string>();
 
 		string FileName { get; set; }
