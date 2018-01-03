@@ -72,7 +72,7 @@ namespace KSHTool
 					break;
 				case SERVICE.NONE:
 				default:
-					MessageBox.Show("해당 서비스는 아직 지원되지 않습니다.");
+					MessageBox.Show("해당 서비스는 지원되지 않습니다.");
 					break;
 			}
 		}
