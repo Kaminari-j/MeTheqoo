@@ -72,7 +72,7 @@ namespace KSHTool
 
 			if (this.GetContentsFromSrc(this._url) == true)
 			{
-				List<string> fileList = GrepFilesFromContents(this._Content, this._grepKeyword);
+				List<string> fileList = MakeFileList(this._Content, this._grepKeyword);
 				if (fileList.Count >= 1)
 				{
 					DoDownloadFile(fileList);
@@ -102,7 +102,7 @@ namespace KSHTool
 			}
 		}
 
-		protected virtual List<string> GrepFilesFromContents(string strWebContent, string strGrepKwd)
+		protected List<string> MakeFileList(string strWebContent, string strGrepKwd)
 		{
 			if (String.IsNullOrEmpty(this._Content))
 			{
@@ -112,54 +112,12 @@ namespace KSHTool
 			{
 				try
 				{
-					List<string> tmpFileList = new List<string>();
+					List<string> _filelist = GetFileListFromContent(strWebContent);
 
-					if (this.SERVICE_NAME == SERVICE.twitter)
-					{
-						this.MEDIA_TYPE = MEDIATYPE.image; // Twitterの動画ダウンロードは今後追加するため
-						MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(strWebContent, strGrepKwd);
-						foreach (Match file in tmp)
-						{
-							tmpFileList.Add(file.ToString());
-						}
-					}
-					else if (this.SERVICE_NAME == SERVICE.instagram)
-					{
-						JObject jobj = JObject.Parse(strWebContent);
-
-						string mediaType = jobj["graphql"]["shortcode_media"]["__typename"].ToString();
-
-						if (mediaType == "GraphVideo")
-						{
-							this.MEDIA_TYPE = MEDIATYPE.video;
-							tmpFileList.Add(jobj["graphql"]["shortcode_media"]["video_url"].ToString());
-						}
-						else if (mediaType == "GraphImage")
-						{
-							this.MEDIA_TYPE = MEDIATYPE.image;
-							tmpFileList.Add(jobj["graphql"]["shortcode_media"]["display_url"].ToString());
-						}
-						else if (mediaType == "GraphSidecar")
-						{
-							foreach (JObject file in jobj["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
-							{
-								mediaType = file["node"]["__typename"].ToString();
-								if (mediaType == "GraphVideo")
-								{
-									tmpFileList.Add(file["node"]["video_url"].ToString());
-								}
-								else if (mediaType == "GraphImage")
-								{
-									tmpFileList.Add(file["node"]["display_url"].ToString());
-								}
-							}
-						}
-					}
-
-					if (tmpFileList.Count == 0)
+					if (_filelist.Count == 0)
 						return null;
 					else
-						return tmpFileList;
+						return _filelist;
 				}
 				catch (Exception ex)
 				{
@@ -167,6 +125,11 @@ namespace KSHTool
 					return null;
 				}
 			}
+		}
+
+		protected virtual List<string> GetFileListFromContent(string content)
+		{
+			return null;
 		}
 
 		protected bool DoDownloadFile(List<string> lstFiles)
@@ -247,15 +210,59 @@ namespace KSHTool
 		// https://www.instagram.com/p/BdcnRlSl4Yh
 		public DownloadInstagram(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.instagram, listbox, tbar) { }
 
-		protected override List<string> GrepFilesFromContents(string strWebContent, string strGrepKwd)
+		protected override List<string> GetFileListFromContent(string content)
 		{
-			return base.GrepFilesFromContents(strWebContent, strGrepKwd);
+			List<string> tmpFileList = new List<string>();
+			JObject jobj = JObject.Parse(content);
+
+			string mediaType = jobj["graphql"]["shortcode_media"]["__typename"].ToString();
+
+			if (mediaType == "GraphVideo")
+			{
+				this.MEDIA_TYPE = MEDIATYPE.video;
+				tmpFileList.Add(jobj["graphql"]["shortcode_media"]["video_url"].ToString());
+			}
+			else if (mediaType == "GraphImage")
+			{
+				this.MEDIA_TYPE = MEDIATYPE.image;
+				tmpFileList.Add(jobj["graphql"]["shortcode_media"]["display_url"].ToString());
+			}
+			else if (mediaType == "GraphSidecar")
+			{
+				foreach (JObject file in jobj["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
+				{
+					mediaType = file["node"]["__typename"].ToString();
+					if (mediaType == "GraphVideo")
+					{
+						tmpFileList.Add(file["node"]["video_url"].ToString());
+					}
+					else if (mediaType == "GraphImage")
+					{
+						tmpFileList.Add(file["node"]["display_url"].ToString());
+					}
+				}
+			}
+
+			return tmpFileList;
 		}
 	}
 
 	public class DownloadTwitter : DownloadFile
 	{
 		public DownloadTwitter(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.twitter, listbox, tbar) { }
+
+		protected override List<string> GetFileListFromContent(string content)
+		{
+			this.MEDIA_TYPE = MEDIATYPE.image; // Twitterの動画ダウンロードは今後追加するため
+			MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(content, this._grepKeyword);
+			List<string> tmpFileList = new List<string>();
+			foreach (Match file in tmp)
+			{
+				tmpFileList.Add(file.ToString());
+			}
+
+			return tmpFileList;
+		}
 
 		protected override string GetOriginalImageName(string imgUrl)
 		{

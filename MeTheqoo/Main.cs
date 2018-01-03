@@ -20,6 +20,7 @@ namespace KSHTool
 		{
 			InitializeComponent();
 
+			// initialize controls
 			this.statusLabel_ServiceName.Text = "";
 		}
 
