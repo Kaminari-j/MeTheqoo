@@ -30,54 +30,31 @@ namespace KSHTool
 
 		public DownloadFile(string url, SERVICE SVC, ListBox lstBox, ToolStripProgressBar prgbar)
 		{
-			this._url = url;
+			this._url = SetTargetUrl(url);
 			this.SERVICE_NAME = SVC;
 			this.lb = lstBox;
 			this.tsProgress = prgbar;
 
-			if (this.SERVICE_NAME == SERVICE.instagram)
+			try
 			{
-				if (url.Contains("taken-by"))
+				if (this.GetContentsFromSrc(this._url) == true)
 				{
-					this._url = url.Split('?')[0];
-					this._url += "?__a=1";
-				}
-				else
-				{
-					if (url[url.Length - 1] == '/')
+					List<string> fileList = MakeFileList(this._Content);
+					if (fileList.Count >= 1)
 					{
-						this._url += "?__a=1";
-					}
-					else
-					{
-						this._url += "/?__a=1";
+						DoDownloadFile(fileList);
 					}
 				}
-
 			}
-
-			switch (this.SERVICE_NAME)
+			catch (Exception ex)
 			{
-				case SERVICE.twitter:
-					this._grepKeyword = @"data-image-url=.*";
-					break;
-				case SERVICE.instagram:
-					//this._grepKeyword = @"display_resources.*]";
-					this._grepKeyword = null; // JSONで取得するため
-					break;
-				case SERVICE.NONE:
-				default:
-					break;
+				ShowExceptionMsgBox(ex);
 			}
+		}
 
-			if (this.GetContentsFromSrc(this._url) == true)
-			{
-				List<string> fileList = MakeFileList(this._Content, this._grepKeyword);
-				if (fileList.Count >= 1)
-				{
-					DoDownloadFile(fileList);
-				}
-			}
+		protected virtual string SetTargetUrl(string url)
+		{
+			return url;
 		}
 
 		protected bool GetContentsFromSrc(string url)
@@ -93,6 +70,7 @@ namespace KSHTool
 					this._Content = reader.ReadToEnd();
 				}
 
+
 				return true;
 			}
 			catch (Exception ex)
@@ -102,28 +80,24 @@ namespace KSHTool
 			}
 		}
 
-		protected List<string> MakeFileList(string strWebContent, string strGrepKwd)
+		protected List<string> MakeFileList(string strWebContent)
 		{
-			if (String.IsNullOrEmpty(this._Content))
+			try
 			{
-				return null;
-			}
-			else
-			{
-				try
-				{
-					List<string> _filelist = GetFileListFromContent(strWebContent);
-
-					if (_filelist.Count == 0)
-						return null;
-					else
-						return _filelist;
-				}
-				catch (Exception ex)
-				{
-					ShowExceptionMsgBox(ex);
+				if (String.IsNullOrEmpty(this._Content))
 					return null;
-				}
+
+				List<string> _filelist = GetFileListFromContent(strWebContent);
+
+				if (_filelist.Count == 0)
+					return null;
+				else
+					return _filelist;
+			}
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+				return null;
 			}
 		}
 
@@ -208,7 +182,14 @@ namespace KSHTool
 	public class DownloadInstagram : DownloadFile
 	{
 		// https://www.instagram.com/p/BdcnRlSl4Yh
-		public DownloadInstagram(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.instagram, listbox, tbar) { }
+		public DownloadInstagram(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.instagram, listbox, tbar)
+		{
+		}
+
+		protected override string SetTargetUrl(string url)
+		{
+			return System.Text.RegularExpressions.Regex.Matches(url, @"https\:\/\/www\.instagram\.com\/p\/[0-9a-zA-Z]+/")[0].ToString() + "?__a=1";
+		}
 
 		protected override List<string> GetFileListFromContent(string content)
 		{
@@ -249,13 +230,17 @@ namespace KSHTool
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.twitter, listbox, tbar) { }
+		public DownloadTwitter(String url, ListBox listbox, ToolStripProgressBar tbar) : base(url, SERVICE.twitter, listbox, tbar)
+		{
+			this._grepKeyword = @"data-image-url=.*";
+		}
 
 		protected override List<string> GetFileListFromContent(string content)
 		{
 			this.MEDIA_TYPE = MEDIATYPE.image; // Twitterの動画ダウンロードは今後追加するため
 			MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(content, this._grepKeyword);
 			List<string> tmpFileList = new List<string>();
+			JObject jobj = JObject.Parse(content);
 			foreach (Match file in tmp)
 			{
 				tmpFileList.Add(file.ToString());
