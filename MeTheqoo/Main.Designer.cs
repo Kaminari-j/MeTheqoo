@@ -34,20 +34,22 @@
 			this.statusLabel_ServiceName = new System.Windows.Forms.ToolStripStatusLabel();
 			this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
 			this.listBox_Download = new System.Windows.Forms.ListBox();
+			this.pbPictureSelected = new System.Windows.Forms.PictureBox();
 			this.statusStrip1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pbPictureSelected)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tbUrl
 			// 
 			this.tbUrl.Location = new System.Drawing.Point(12, 12);
 			this.tbUrl.Name = "tbUrl";
-			this.tbUrl.Size = new System.Drawing.Size(569, 19);
+			this.tbUrl.Size = new System.Drawing.Size(734, 19);
 			this.tbUrl.TabIndex = 0;
 			this.tbUrl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbUrl_KeyDown);
 			// 
 			// btnDownload
 			// 
-			this.btnDownload.Location = new System.Drawing.Point(587, 10);
+			this.btnDownload.Location = new System.Drawing.Point(752, 10);
 			this.btnDownload.Name = "btnDownload";
 			this.btnDownload.Size = new System.Drawing.Size(75, 23);
 			this.btnDownload.TabIndex = 1;
@@ -62,7 +64,7 @@
             this.statusLabel_ServiceName});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 269);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(673, 23);
+			this.statusStrip1.Size = new System.Drawing.Size(839, 23);
 			this.statusStrip1.TabIndex = 2;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
@@ -83,15 +85,27 @@
 			this.listBox_Download.ItemHeight = 12;
 			this.listBox_Download.Location = new System.Drawing.Point(13, 38);
 			this.listBox_Download.Name = "listBox_Download";
-			this.listBox_Download.Size = new System.Drawing.Size(648, 220);
+			this.listBox_Download.Size = new System.Drawing.Size(568, 220);
 			this.listBox_Download.TabIndex = 3;
+			this.listBox_Download.SelectedIndexChanged += new System.EventHandler(this.listBox_Download_SelectedIndexChanged);
 			this.listBox_Download.DoubleClick += new System.EventHandler(this.listBox_Download_DoubleClick);
+			// 
+			// pbPictureSelected
+			// 
+			this.pbPictureSelected.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.pbPictureSelected.Location = new System.Drawing.Point(588, 38);
+			this.pbPictureSelected.Name = "pbPictureSelected";
+			this.pbPictureSelected.Size = new System.Drawing.Size(239, 220);
+			this.pbPictureSelected.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pbPictureSelected.TabIndex = 4;
+			this.pbPictureSelected.TabStop = false;
 			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(673, 292);
+			this.ClientSize = new System.Drawing.Size(839, 292);
+			this.Controls.Add(this.pbPictureSelected);
 			this.Controls.Add(this.listBox_Download);
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.btnDownload);
@@ -102,6 +116,7 @@
 			this.Text = "sh_downloader";
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pbPictureSelected)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -115,6 +130,7 @@
 		private System.Windows.Forms.ToolStripStatusLabel statusLabel_ServiceName;
 		public System.Windows.Forms.ListBox listBox_Download;
 		private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+		private System.Windows.Forms.PictureBox pbPictureSelected;
 	}
 }
 

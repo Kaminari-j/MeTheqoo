@@ -159,5 +159,14 @@ namespace KSHTool
 			}
 		}
 		#endregion
+
+		private void listBox_Download_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (((ListBox)sender).SelectedItem != null)
+			{
+				this.pbPictureSelected.Image = Image.FromFile(((ListBox)sender).SelectedItem.ToString());
+				
+			}
+		}
 	}
 }

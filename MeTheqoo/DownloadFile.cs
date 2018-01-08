@@ -257,7 +257,7 @@ namespace KSHTool
 
 		protected override string SetTargetUrl(string url)
 		{
-			return System.Text.RegularExpressions.Regex.Matches(url, @"https\:\/\/www\.instagram\.com\/p\/[0-9a-zA-Z]+/")[0].ToString() + "?__a=1";
+			return System.Text.RegularExpressions.Regex.Matches(url, @"https\:\/\/www\.instagram\.com\/p\/[0-9a-zA-Z\-]+/")[0].ToString() + "?__a=1";
 		}
 
 		protected override List<string> GetFileListFromContent(string content)
