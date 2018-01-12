@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Linq;
 using System.Net;
 using System.Security.AccessControl;
@@ -12,70 +13,232 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace MeTheqoo
+namespace WATCH_TOOL
 {
 	public class DownloadFile
 	{
-		protected String _SRC { get; set; }
-		protected String ImgFindKwd { get; set; }
+		protected WATCH_TOOL.SERVICE SERVICE_NAME = SERVICE.NONE;
+		protected WATCH_TOOL.MEDIATYPE MEDIA_TYPE = MEDIATYPE.NONE;
+		protected String _grepKeyword { get; set; }
 		private String _Content { get; set; }
-		protected String _ImgUrl { get; set; }
-		public Image _IMG { get; set; }
-		protected List<string> _imgNames = new List<string>();
+		private String _url { get; set; }
+		public List<string> _DownloadList { get; set; }
+		protected IControlInterface frm;
+		private bool _finishFlag = false;
+		private string _DownloadDIR { get; set; }
 
-		public DownloadFile(String url) : base()
+		public DownloadFile(string url, SERVICE SVC, IControlInterface MainFrm)
 		{
-			this._SRC = url;
+			this._url = SetTargetUrl(url);
+			this.SERVICE_NAME = SVC;
+			this.frm = MainFrm;
 		}
 
-		protected void GetContentsFromSrc()
+		public bool StartDownload()
 		{
-			var webRequest = WebRequest.Create(_SRC);
-
-			using (var response = webRequest.GetResponse())
-			using (var content = response.GetResponseStream())
-			using (var reader = new StreamReader(content))
+			try
 			{
-				var strContent = reader.ReadToEnd();
-				this._Content = strContent.ToString();
-			}
+				bool dl_result = false;
 
-			if (!String.IsNullOrEmpty(this._Content))
-			{
-				MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(this._Content, this.ImgFindKwd);
-				foreach(Match img in tmp)
+				if (string.IsNullOrEmpty(this._url))
 				{
-					this._imgNames.Add(img.ToString());
+					return false;
 				}
+
+				if (this.GetContentsFromSrc(this._url) == true)
+				{
+					List<string> fileList = MakeFileList(this._Content);
+					if (fileList.Count >= 1)
+					{
+						dl_result = DoDownloadFile(fileList, true);
+					}
+				}
+
+				return dl_result;
+			}
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+				return false;
 			}
 		}
 
-		protected bool DoDownloadFile()
+		protected virtual string SetTargetUrl(string url)
+		{
+			return url;
+		}
+
+		protected bool GetContentsFromSrc(string url)
+		{
+			try
+			{
+				var webRequest = WebRequest.Create(url);
+
+				using (var response = webRequest.GetResponse())
+				using (var content = response.GetResponseStream())
+				using (var reader = new StreamReader(content))
+				{
+					this._Content = reader.ReadToEnd();
+				}
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+				return false;
+			}
+		}
+
+		protected List<string> MakeFileList(string strWebContent)
+		{
+			try
+			{
+				if (String.IsNullOrEmpty(this._Content))
+					return null;
+
+				List<string> _filelist = GetFileListFromContent(strWebContent);
+
+				if (_filelist.Count == 0)
+					return null;
+				else
+					return _filelist;
+			}
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+				return null;
+			}
+		}
+
+		protected virtual List<string> GetFileListFromContent(string content)
+		{
+			return null;
+		}
+
+		protected bool DoDownloadFile(List<string> lstFiles)
 		{
 			// Download from web
-
-			foreach (string imgUrl in _imgNames)
+			try
 			{
-				string targetUrl = this.GetOriginalImageName(imgUrl);
+				// SetProgressbarMax
+				frm.DoSetProgressBarMaxValue(lstFiles.Count);
 
-				WebClient webClient = new WebClient();
+				foreach (string imgUrl in lstFiles)
+				{
+					string targetUrl = this.GetOriginalImageName(imgUrl);
 
-				//have to add filename phrase
-				FileInfo tmpfi = MakeUnique(System.Environment.CurrentDirectory + @"\" + DateTime.Now.ToString("yyyyMMdd") + "_.jpg");
+					string fullName = "";
+					fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
+													+ @"\" + DateTime.Now.ToString("yyyyMMdd")
+													+ "_" + this.SERVICE_NAME
+													+ "_"
+													, imgUrl
+															).FullName;
 
-				webClient.DownloadFile(targetUrl, tmpfi.FullName);
+					// Set File Names to listbox
+					this.frm.DoAddListBoxValue(fullName);
 
-				// read image from file, and delete tmp file?
+					using (WebClient webClient = new WebClient())
+					{
+						// Download
+						webClient.DownloadFile(targetUrl, fullName);
+
+						// read image from file, and delete tmp file?
+					}
+					// Progressbar step
+					frm.DoPerformProgressBarStep();
+				}
+
+				// Reset Progress Bar
+				frm.DoResetProgressBar();
+				return true;
 			}
-			return true;
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+				return false;
+			}
 		}
 
-		public FileInfo MakeUnique(string path)
+		protected bool DoDownloadFile(List<string> lstFiles, bool isThread)
+		{
+			// Download from web
+			try
+			{
+				this._DownloadList = lstFiles;
+				// SetProgressbarMax
+				frm.DoSetProgressBarMaxValue(this._DownloadList.Count);
+
+				// Directory Initialize
+				this._DownloadDIR = (string.IsNullOrEmpty(Properties.Settings.Default.DownloadDir)) ? Application.StartupPath + @"\Download" : Properties.Settings.Default.DownloadDir;
+				DirectoryInfo di = new DirectoryInfo(_DownloadDIR);
+				if (di.Exists == false)
+				{
+					di.Create();
+				}
+
+				//Thread th = new Thread(new ThreadStart(DownloadThread));
+				Thread th = new Thread(() => DownloadThread());
+				th.Start();
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+				return false;
+			}
+		}
+
+		public void DownloadThread()
+		{
+			try
+			{
+				foreach (string imgUrl in this._DownloadList)
+				{
+					string targetUrl = this.GetOriginalImageName(imgUrl);
+
+					string fullName = "";
+					fullName = MakeUniqueFileName(this._DownloadDIR
+													+ @"\" + DateTime.Now.ToString("yyyyMMdd")
+													+ "_" + this.SERVICE_NAME
+													+ "_"
+													, imgUrl
+															).FullName;
+
+					using (WebClient webClient = new WebClient())
+					{
+						// Download
+						webClient.DownloadFile(targetUrl, fullName);
+
+						// read image from file, and delete tmp file?
+					}
+
+					// Set File Names to listbox
+					this.frm.DoAddListBoxValue(fullName);
+					// Progressbar step
+					frm.DoPerformProgressBarStep();
+				}
+
+				// Reset Progress Bar
+				frm.DoResetProgressBar();
+				this._finishFlag = true;
+			}
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+			}
+		}
+
+		public FileInfo MakeUniqueFileName(string path, string imgUrl)
 		{
 			string dir = Path.GetDirectoryName(path);
 			string fileName = Path.GetFileNameWithoutExtension(path);
-			string fileExt = Path.GetExtension(path);
+			string fileExt = Path.GetExtension(imgUrl);
 
 			for (int i = 1; ; ++i)
 			{
@@ -90,33 +253,101 @@ namespace MeTheqoo
 		{
 			// orig をつけるかほかの方法
 
-			try { } catch (Exception) { }
-
-			return string.Empty;
+			return imgUrl;
 		}
 
 		protected virtual string GetOriginalMovieName(string imgUrl)
 		{
 			// orig をつけるかほかの方法
 
-			try { } catch (Exception) { }
+			return imgUrl;
+		}
 
-			return string.Empty;
+		protected void ShowExceptionMsgBox(Exception ex)
+		{
+			MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+		}
+
+		protected void ShowErrorMsgBox(string msg)
+		{
+			MessageBox.Show(msg, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+		}
+	}
+
+	public class DownloadInstagram : DownloadFile
+	{
+		// https://www.instagram.com/p/BdcnRlSl4Yh
+		public DownloadInstagram(String url, IControlInterface MainFrm) : base(url, SERVICE.instagram, MainFrm) { }
+
+		protected override string SetTargetUrl(string url)
+		{
+			try
+			{
+				return System.Text.RegularExpressions.Regex.Matches(url, @"https\:\/\/www\.instagram\.com\/p\/[0-9a-zA-Z\-]+/")[0].ToString() + "?__a=1";
+			}
+			catch (Exception)
+			{
+				this.ShowErrorMsgBox(url + "\r\n이 주소는 아직(?)지원하지 않습니다!");
+				return null;
+			}
+		}
+
+		protected override List<string> GetFileListFromContent(string content)
+		{
+			List<string> tmpFileList = new List<string>();
+			JObject jobj = JObject.Parse(content);
+
+			string mediaType = jobj["graphql"]["shortcode_media"]["__typename"].ToString();
+
+			if (mediaType == "GraphVideo")
+			{
+				this.MEDIA_TYPE = MEDIATYPE.video;
+				tmpFileList.Add(jobj["graphql"]["shortcode_media"]["video_url"].ToString());
+			}
+			else if (mediaType == "GraphImage")
+			{
+				this.MEDIA_TYPE = MEDIATYPE.image;
+				tmpFileList.Add(jobj["graphql"]["shortcode_media"]["display_url"].ToString());
+			}
+			else if (mediaType == "GraphSidecar")
+			{
+				foreach (JObject file in jobj["graphql"]["shortcode_media"]["edge_sidecar_to_children"]["edges"])
+				{
+					mediaType = file["node"]["__typename"].ToString();
+					if (mediaType == "GraphVideo")
+					{
+						tmpFileList.Add(file["node"]["video_url"].ToString());
+					}
+					else if (mediaType == "GraphImage")
+					{
+						tmpFileList.Add(file["node"]["display_url"].ToString());
+					}
+				}
+			}
+
+			return tmpFileList;
 		}
 	}
 
 	public class DownloadTwitter : DownloadFile
 	{
-		public DownloadTwitter(String url) : base(url)
+		public DownloadTwitter(String url, IControlInterface MainFrm) : base(url, SERVICE.twitter, MainFrm)
 		{
-			this.ImgFindKwd = @"data-image-url=.*";
-			
-			if (!String.IsNullOrEmpty(this._SRC))
-			{
-				this.GetContentsFromSrc();
+			this._grepKeyword = @"data-image-url=.*";
+		}
 
-				DoDownloadFile();
+		protected override List<string> GetFileListFromContent(string content)
+		{
+			this.MEDIA_TYPE = MEDIATYPE.image; // Twitterの動画ダウンロードは今後追加するため
+			MatchCollection tmp = System.Text.RegularExpressions.Regex.Matches(content, this._grepKeyword);
+			List<string> tmpFileList = new List<string>();
+			JObject jobj = JObject.Parse(content);
+			foreach (Match file in tmp)
+			{
+				tmpFileList.Add(file.ToString());
 			}
+
+			return tmpFileList;
 		}
 
 		protected override string GetOriginalImageName(string imgUrl)
@@ -138,6 +369,8 @@ namespace MeTheqoo
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message + ex.StackTrace);
+
+				return string.Empty;
 			}
 
 			return string.Empty;

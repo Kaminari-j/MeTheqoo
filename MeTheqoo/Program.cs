@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MeTheqoo
+namespace WATCH_TOOL
 {
     static class Program
     {

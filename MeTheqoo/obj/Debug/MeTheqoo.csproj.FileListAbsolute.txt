@@ -7,3 +7,21 @@ c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debu
 c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.csproj.GenerateResource.Cache
 c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.exe
 c:\users\rodney\documents\visual studio 2017\Projects\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.pdb
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\MeTheqoo.exe.config
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\MeTheqoo.exe
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\MeTheqoo.pdb
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.csprojResolveAssemblyReference.cache
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.Main.resources
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.Properties.Resources.resources
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.csproj.GenerateResource.Cache
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.exe
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\MeTheqoo.pdb
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\Newtonsoft.Json.dll
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\Newtonsoft.Json.xml
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\System.Net.Http.Formatting.dll
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\WebApiContrib.Formatting.JavaScriptSerializer.dll
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\System.Net.Http.Formatting.xml
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\System.Net.Http.Extensions.dll
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\System.Net.Http.Primitives.dll
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\System.Net.Http.Extensions.xml
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\System.Net.Http.Primitives.xml

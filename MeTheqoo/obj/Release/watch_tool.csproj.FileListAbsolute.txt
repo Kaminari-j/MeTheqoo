@@ -1,0 +1,10 @@
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Release\WATCH_TOOL.exe.config
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Release\WATCH_TOOL.exe
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Release\WATCH_TOOL.pdb
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Release\Newtonsoft.Json.dll
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Release\Newtonsoft.Json.xml
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Release\WATCH_TOOL.Main.resources
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Release\WATCH_TOOL.Properties.Resources.resources
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Release\watch_tool.csproj.GenerateResource.Cache
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Release\WATCH_TOOL.exe
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Release\WATCH_TOOL.pdb

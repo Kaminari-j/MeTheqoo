@@ -5,14 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MeTheqoo
+namespace WATCH_TOOL
 {
+	public enum FILETYPE { jpg, png }
+
 	public class DownFileInfo
 	{
 		// Download Info
-		string OrigSrc { get; set; }
+		public string URL { get; set; }
+		public string DownloadSrc { get; set; }
 		// File Info
-		string FileType { get; set; }
+		public WATCH_TOOL.FILETYPE FileType { get; set; }
+		public List<string> _FileList = new List<string>();
+
 		string FileName { get; set; }
 		string FileNameOrg { get; set; }
 		Int64 FileSize { get; set; }
@@ -21,12 +26,12 @@ namespace MeTheqoo
 
 		public DownFileInfo(string src)
 		{
-			this.OrigSrc = src;
+			this.URL = src;
 		}
 
 		public DownFileInfo(string src, string FileName, string FileNameOrg)
 		{
-			this.OrigSrc = src;
+			this.URL = src;
 			this.FileName = FileName;
 			this.FileNameOrg = FileNameOrg;
 		}
