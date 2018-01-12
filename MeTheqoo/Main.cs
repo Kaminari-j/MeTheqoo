@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -35,12 +37,19 @@ namespace WATCH_TOOL
 
 	public partial class Main : Form, IControlInterface
 	{
+		public static string _DOWNLOAD_DIR = Application.StartupPath + @"\Download";
+
 		public Main()
 		{
 			InitializeComponent();
 
 			// initialize controls
 			this.statusLabel_ServiceName.Text = "";
+			DirectoryInfo di = new DirectoryInfo(_DOWNLOAD_DIR);
+			if (di.Exists == false)
+			{
+				di.Create();
+			}
 		}
 
 		#region -- Methods --
@@ -121,6 +130,26 @@ namespace WATCH_TOOL
 			this.listBox_Download.DataSource = Data;
 		}
 
+		public void DoResetListBoxData()
+		{
+			string _DownloadDIR = (string.IsNullOrEmpty(Properties.Settings.Default.DownloadDir)) ? _DOWNLOAD_DIR : Properties.Settings.Default.DownloadDir;
+			string[] _strFiles = Directory.GetFiles(_DownloadDIR);
+
+			ArrayList downloadFiles = new ArrayList();
+			foreach (string file in _strFiles)
+			{
+				downloadFiles.Add(file);
+			}
+			downloadFiles.Sort();
+
+			this.listBox_Download.Items.Clear();
+
+			foreach (string file in downloadFiles)
+			{
+				this.listBox_Download.Items.Add(file);
+			}
+		}
+
 		public void DoResetProgressBar()
 		{
 			if (this.statusStrip1.InvokeRequired)
@@ -138,6 +167,24 @@ namespace WATCH_TOOL
 		#endregion
 
 		#region -- HandleEvent --
+
+		private void Main_Load(object sender, EventArgs e)
+		{
+			this.DoResetListBoxData();
+		}
+
+		private void listBox_Download_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (((ListBox)sender).SelectedItem != null)
+			{
+				if (((ListBox)sender).SelectedItem.ToString().Contains("mp4"))
+				{ return; }
+				else
+				{
+					this.pbPictureSelected.BackgroundImage = Image.FromFile(((ListBox)sender).SelectedItem.ToString());
+				}
+			}
+		}
 		private void tbUrl_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter)
@@ -149,6 +196,11 @@ namespace WATCH_TOOL
 		private void btnDownload_Click(object sender, EventArgs e)
 		{
 			this.onButtonclick();
+		}
+
+		private void btnSortList_Click(object sender, EventArgs e)
+		{
+			this.DoResetListBoxData();
 		}
 
 		private void listBox_Download_DoubleClick(object sender, EventArgs e)
@@ -163,22 +215,21 @@ namespace WATCH_TOOL
 		private void SetDownloadDirToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog fbd = new FolderBrowserDialog();
-			fbd.SelectedPath = (string.IsNullOrEmpty(Properties.Settings.Default.DownloadDir)) ? Application.StartupPath + @"\Download" : Properties.Settings.Default.DownloadDir;
+			fbd.SelectedPath = (string.IsNullOrEmpty(Properties.Settings.Default.DownloadDir)) ? _DOWNLOAD_DIR : Properties.Settings.Default.DownloadDir;
 			if (fbd.ShowDialog() == DialogResult.OK)
 			{
 				Properties.Settings.Default.DownloadDir = fbd.SelectedPath;
+				Properties.Settings.Default.Save();
+				this.DoResetListBoxData();
 			}
 		}
-		#endregion
-		#endregion
 
-		private void listBox_Download_SelectedIndexChanged(object sender, EventArgs e)
+		private void exitXToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (((ListBox)sender).SelectedItem != null)
-			{
-				this.pbPictureSelected.Image = Image.FromFile(((ListBox)sender).SelectedItem.ToString());
-
-			}
+			this.Close();
 		}
+		#endregion
+
+		#endregion
 	}
 }

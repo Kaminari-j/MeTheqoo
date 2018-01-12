@@ -38,8 +38,10 @@
 			this.pbPictureSelected = new System.Windows.Forms.PictureBox();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.저장폴더설정DToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnSortList = new System.Windows.Forms.Button();
+			this.exitXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbPictureSelected)).BeginInit();
 			this.menuStrip1.SuspendLayout();
@@ -93,7 +95,7 @@
 			this.listBox_Download.ItemHeight = 12;
 			this.listBox_Download.Location = new System.Drawing.Point(12, 60);
 			this.listBox_Download.Name = "listBox_Download";
-			this.listBox_Download.Size = new System.Drawing.Size(577, 340);
+			this.listBox_Download.Size = new System.Drawing.Size(546, 340);
 			this.listBox_Download.TabIndex = 3;
 			this.listBox_Download.SelectedIndexChanged += new System.EventHandler(this.listBox_Download_SelectedIndexChanged);
 			this.listBox_Download.DoubleClick += new System.EventHandler(this.listBox_Download_DoubleClick);
@@ -104,7 +106,7 @@
 			this.pbPictureSelected.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pbPictureSelected.BackgroundImage")));
 			this.pbPictureSelected.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
 			this.pbPictureSelected.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.pbPictureSelected.Location = new System.Drawing.Point(595, 61);
+			this.pbPictureSelected.Location = new System.Drawing.Point(596, 60);
 			this.pbPictureSelected.Name = "pbPictureSelected";
 			this.pbPictureSelected.Size = new System.Drawing.Size(339, 339);
 			this.pbPictureSelected.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -125,10 +127,18 @@
 			// optionsToolStripMenuItem
 			// 
 			this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.저장폴더설정DToolStripMenuItem});
+            this.저장폴더설정DToolStripMenuItem,
+            this.exitXToolStripMenuItem});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(87, 22);
 			this.optionsToolStripMenuItem.Text = "Options (&O)";
+			// 
+			// 저장폴더설정DToolStripMenuItem
+			// 
+			this.저장폴더설정DToolStripMenuItem.Name = "저장폴더설정DToolStripMenuItem";
+			this.저장폴더설정DToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+			this.저장폴더설정DToolStripMenuItem.Text = "저장폴더 설정 (&D)";
+			this.저장폴더설정DToolStripMenuItem.Click += new System.EventHandler(this.SetDownloadDirToolStripMenuItem_Click);
 			// 
 			// aboutToolStripMenuItem
 			// 
@@ -136,18 +146,29 @@
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(54, 22);
 			this.aboutToolStripMenuItem.Text = "About";
 			// 
-			// 저장폴더설정DToolStripMenuItem
+			// btnSortList
 			// 
-			this.저장폴더설정DToolStripMenuItem.Name = "SetDownloadDirToolStripMenuItem";
-			this.저장폴더설정DToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-			this.저장폴더설정DToolStripMenuItem.Text = "저장폴더 설정 (&D)";
-			this.저장폴더설정DToolStripMenuItem.Click += new System.EventHandler(this.SetDownloadDirToolStripMenuItem_Click);
+			this.btnSortList.Location = new System.Drawing.Point(564, 60);
+			this.btnSortList.Name = "btnSortList";
+			this.btnSortList.Size = new System.Drawing.Size(26, 339);
+			this.btnSortList.TabIndex = 6;
+			this.btnSortList.Text = "정렬";
+			this.btnSortList.UseVisualStyleBackColor = true;
+			this.btnSortList.Click += new System.EventHandler(this.btnSortList_Click);
+			// 
+			// exitXToolStripMenuItem
+			// 
+			this.exitXToolStripMenuItem.Name = "exitXToolStripMenuItem";
+			this.exitXToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+			this.exitXToolStripMenuItem.Text = "Exit (&X)";
+			this.exitXToolStripMenuItem.Click += new System.EventHandler(this.exitXToolStripMenuItem_Click);
 			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(947, 430);
+			this.Controls.Add(this.btnSortList);
 			this.Controls.Add(this.pbPictureSelected);
 			this.Controls.Add(this.listBox_Download);
 			this.Controls.Add(this.statusStrip1);
@@ -159,6 +180,7 @@
 			this.MaximizeBox = false;
 			this.Name = "Main";
 			this.Text = "sh_downloader";
+			this.Load += new System.EventHandler(this.Main_Load);
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbPictureSelected)).EndInit();
@@ -182,6 +204,8 @@
 		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem 저장폴더설정DToolStripMenuItem;
+		private System.Windows.Forms.Button btnSortList;
+		private System.Windows.Forms.ToolStripMenuItem exitXToolStripMenuItem;
 	}
 }
 
