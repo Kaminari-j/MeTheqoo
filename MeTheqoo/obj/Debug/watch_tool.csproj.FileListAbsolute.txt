@@ -8,3 +8,4 @@ C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\bin\Debug\WATCH_TOOL.pdb
 C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\WATCH_TOOL.Properties.Resources.resources
 C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\WATCH_TOOL.exe
 C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\WATCH_TOOL.pdb
+C:\Users\rodney\Documents\GitHub\MeTheqoo\MeTheqoo\obj\Debug\watch_tool.csprojResolveAssemblyReference.cache
