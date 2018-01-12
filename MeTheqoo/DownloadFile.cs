@@ -32,10 +32,6 @@ namespace KSHTool
 		public DownloadFile(string url, SERVICE SVC, IControlInterface MainFrm)
 		{
 			this._url = SetTargetUrl(url);
-			if (string.IsNullOrEmpty(this._url))
-			{
-				return;
-			}
 			this.SERVICE_NAME = SVC;
 			this.frm = MainFrm;
 		}
@@ -45,6 +41,11 @@ namespace KSHTool
 			try
 			{
 				bool dl_result = false;
+				
+				if (string.IsNullOrEmpty(this._url))
+				{
+					return false;
+				}
 
 				if (this.GetContentsFromSrc(this._url) == true)
 				{
@@ -270,7 +271,7 @@ namespace KSHTool
 			}
 			catch (Exception)
 			{
-				this.ShowErrorMsgBox(url + "이 주소는 아직(?)지원하지 않습니다!");
+				this.ShowErrorMsgBox(url + "\r\n이 주소는 아직(?)지원하지 않습니다!");
 				return null;
 			}
 		}
