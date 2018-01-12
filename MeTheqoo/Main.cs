@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace KSHTool
+namespace WATCH_TOOL
 {
 	public enum SERVICE { NONE, twitter, instagram };
 	public enum MEDIATYPE { NONE, image, video };
@@ -45,14 +45,14 @@ namespace KSHTool
 
 		#region -- Methods --
 
-		private KSHTool.SERVICE GetServiceName(string url)
+		private WATCH_TOOL.SERVICE GetServiceName(string url)
 		{
 			if (url.Contains("twitter.com"))
-				return KSHTool.SERVICE.twitter;
+				return WATCH_TOOL.SERVICE.twitter;
 			if (url.Contains("instagram.com"))
-				return KSHTool.SERVICE.instagram;
+				return WATCH_TOOL.SERVICE.instagram;
 			else
-				return KSHTool.SERVICE.NONE;
+				return WATCH_TOOL.SERVICE.NONE;
 		}
 
 		private void onButtonclick()
@@ -158,6 +158,18 @@ namespace KSHTool
 				Process.Start(((ListBox)sender).SelectedItem.ToString());
 			}
 		}
+
+		#region -- Menu Strip
+		private void SetDownloadDirToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			fbd.SelectedPath = (string.IsNullOrEmpty(Properties.Settings.Default.DownloadDir)) ? Application.StartupPath + @"\Download" : Properties.Settings.Default.DownloadDir;
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				Properties.Settings.Default.DownloadDir = fbd.SelectedPath;
+			}
+		}
+		#endregion
 		#endregion
 
 		private void listBox_Download_SelectedIndexChanged(object sender, EventArgs e)
@@ -165,7 +177,7 @@ namespace KSHTool
 			if (((ListBox)sender).SelectedItem != null)
 			{
 				this.pbPictureSelected.Image = Image.FromFile(((ListBox)sender).SelectedItem.ToString());
-				
+
 			}
 		}
 	}

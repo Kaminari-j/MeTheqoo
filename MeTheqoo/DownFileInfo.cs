@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KSHTool
+namespace WATCH_TOOL
 {
 	public enum FILETYPE { jpg, png }
 
@@ -15,7 +15,7 @@ namespace KSHTool
 		public string URL { get; set; }
 		public string DownloadSrc { get; set; }
 		// File Info
-		public KSHTool.FILETYPE FileType { get; set; }
+		public WATCH_TOOL.FILETYPE FileType { get; set; }
 		public List<string> _FileList = new List<string>();
 
 		string FileName { get; set; }

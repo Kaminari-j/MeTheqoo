@@ -16,18 +16,19 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace KSHTool
+namespace WATCH_TOOL
 {
 	public class DownloadFile
 	{
-		protected KSHTool.SERVICE SERVICE_NAME = SERVICE.NONE;
-		protected KSHTool.MEDIATYPE MEDIA_TYPE = MEDIATYPE.NONE;
+		protected WATCH_TOOL.SERVICE SERVICE_NAME = SERVICE.NONE;
+		protected WATCH_TOOL.MEDIATYPE MEDIA_TYPE = MEDIATYPE.NONE;
 		protected String _grepKeyword { get; set; }
 		private String _Content { get; set; }
 		private String _url { get; set; }
 		public List<string> _DownloadList { get; set; }
 		protected IControlInterface frm;
 		private bool _finishFlag = false;
+		private string _DownloadDIR { get; set; }
 
 		public DownloadFile(string url, SERVICE SVC, IControlInterface MainFrm)
 		{
@@ -41,7 +42,7 @@ namespace KSHTool
 			try
 			{
 				bool dl_result = false;
-				
+
 				if (string.IsNullOrEmpty(this._url))
 				{
 					return false;
@@ -172,6 +173,14 @@ namespace KSHTool
 				// SetProgressbarMax
 				frm.DoSetProgressBarMaxValue(this._DownloadList.Count);
 
+				// Directory Initialize
+				this._DownloadDIR = (string.IsNullOrEmpty(Properties.Settings.Default.DownloadDir)) ? Application.StartupPath + @"\Download" : Properties.Settings.Default.DownloadDir;
+				DirectoryInfo di = new DirectoryInfo(_DownloadDIR);
+				if (di.Exists == false)
+				{
+					di.Create();
+				}
+
 				//Thread th = new Thread(new ThreadStart(DownloadThread));
 				Thread th = new Thread(() => DownloadThread());
 				th.Start();
@@ -187,35 +196,42 @@ namespace KSHTool
 
 		public void DownloadThread()
 		{
-			foreach (string imgUrl in this._DownloadList)
+			try
 			{
-				string targetUrl = this.GetOriginalImageName(imgUrl);
-
-				string fullName = "";
-				fullName = MakeUniqueFileName(System.Environment.CurrentDirectory
-												+ @"\" + DateTime.Now.ToString("yyyyMMdd")
-												+ "_" + this.SERVICE_NAME
-												+ "_"
-												, imgUrl
-														).FullName;
-
-				using (WebClient webClient = new WebClient())
+				foreach (string imgUrl in this._DownloadList)
 				{
-					// Download
-					webClient.DownloadFile(targetUrl, fullName);
+					string targetUrl = this.GetOriginalImageName(imgUrl);
 
-					// read image from file, and delete tmp file?
+					string fullName = "";
+					fullName = MakeUniqueFileName(this._DownloadDIR
+													+ @"\" + DateTime.Now.ToString("yyyyMMdd")
+													+ "_" + this.SERVICE_NAME
+													+ "_"
+													, imgUrl
+															).FullName;
+
+					using (WebClient webClient = new WebClient())
+					{
+						// Download
+						webClient.DownloadFile(targetUrl, fullName);
+
+						// read image from file, and delete tmp file?
+					}
+
+					// Set File Names to listbox
+					this.frm.DoAddListBoxValue(fullName);
+					// Progressbar step
+					frm.DoPerformProgressBarStep();
 				}
 
-				// Set File Names to listbox
-				this.frm.DoAddListBoxValue(fullName);
-				// Progressbar step
-				frm.DoPerformProgressBarStep();
+				// Reset Progress Bar
+				frm.DoResetProgressBar();
+				this._finishFlag = true;
 			}
-
-			// Reset Progress Bar
-			frm.DoResetProgressBar();
-			this._finishFlag = true;
+			catch (Exception ex)
+			{
+				ShowExceptionMsgBox(ex);
+			}
 		}
 
 		public FileInfo MakeUniqueFileName(string path, string imgUrl)

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimSeohyeonTool", "MeTheqoo\KimSeohyeonTool.csproj", "{265D55C6-4D26-4C4E-8414-38472B5F6DF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "watch_tool", "MeTheqoo\watch_tool.csproj", "{265D55C6-4D26-4C4E-8414-38472B5F6DF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
