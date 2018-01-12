@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KSHTool.Properties {
+namespace KimSeohyeonTool.Properties {
     using System;
     
     
@@ -57,6 +57,16 @@ namespace KSHTool.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap background_img {
+            get {
+                object obj = ResourceManager.GetObject("background_img", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

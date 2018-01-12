@@ -32,6 +32,10 @@ namespace KSHTool
 		public DownloadFile(string url, SERVICE SVC, IControlInterface MainFrm)
 		{
 			this._url = SetTargetUrl(url);
+			if (string.IsNullOrEmpty(this._url))
+			{
+				return;
+			}
 			this.SERVICE_NAME = SVC;
 			this.frm = MainFrm;
 		}
@@ -49,7 +53,7 @@ namespace KSHTool
 					{
 						dl_result = DoDownloadFile(fileList, true);
 					}
-				} 
+				}
 
 				return dl_result;
 			}
@@ -166,7 +170,7 @@ namespace KSHTool
 				this._DownloadList = lstFiles;
 				// SetProgressbarMax
 				frm.DoSetProgressBarMaxValue(this._DownloadList.Count);
-				
+
 				//Thread th = new Thread(new ThreadStart(DownloadThread));
 				Thread th = new Thread(() => DownloadThread());
 				th.Start();
@@ -242,22 +246,33 @@ namespace KSHTool
 			return imgUrl;
 		}
 
-		private void ShowExceptionMsgBox(Exception ex)
+		protected void ShowExceptionMsgBox(Exception ex)
 		{
 			MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+		}
+
+		protected void ShowErrorMsgBox(string msg)
+		{
+			MessageBox.Show(msg, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 	}
 
 	public class DownloadInstagram : DownloadFile
 	{
 		// https://www.instagram.com/p/BdcnRlSl4Yh
-		public DownloadInstagram(String url, IControlInterface MainFrm) : base(url, SERVICE.instagram, MainFrm)
-		{
-		}
+		public DownloadInstagram(String url, IControlInterface MainFrm) : base(url, SERVICE.instagram, MainFrm) { }
 
 		protected override string SetTargetUrl(string url)
 		{
-			return System.Text.RegularExpressions.Regex.Matches(url, @"https\:\/\/www\.instagram\.com\/p\/[0-9a-zA-Z\-]+/")[0].ToString() + "?__a=1";
+			try
+			{
+				return System.Text.RegularExpressions.Regex.Matches(url, @"https\:\/\/www\.instagram\.com\/p\/[0-9a-zA-Z\-]+/")[0].ToString() + "?__a=1";
+			}
+			catch (Exception)
+			{
+				this.ShowErrorMsgBox(url + "이 주소는 아직(?)지원하지 않습니다!");
+				return null;
+			}
 		}
 
 		protected override List<string> GetFileListFromContent(string content)
